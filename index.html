@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="style.css" />
+  <title>Travel Guide with Interactive Map</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .slideshow {
+      background-size: cover;
+      background-position: center;
+      transition: background-image 1s ease-in-out;
+    }
+
+    /* Dropdown Menu */
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: #1f2937; /* Tailwind gray-800 */
+      min-width: 150px;
+      box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+      z-index: 50;
+    }
+
+    .dropdown-content a {
+      color: white;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #374151; /* Tailwind gray-700 */
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+  </style>
+</head>
+<body class="bg-black text-white">
+
+  <header>
+    <nav>
+      <div class="nav__bar flex justify-between items-center px-6 py-4">
+        <div class="nav__logo text-2xl font-bold">WanderMap  </div>
+        <ul class="nav__links hidden md:flex space-x-6">
+          <li class="link"><a href="index.html">Home</a></li>
+          <li class="link"><a href="explore.html">Explore</a></li>
+          <li class="link"><a href="journal.html">Journals</a></li>
+          <li class="link"><a href="services.html">Our Services</a></li>
+          <li class="link"><a href="review.html">Review</a></li>
+          <li class="link"><a href="contact.html">Contact</a></li>
+        </ul>
+
+        <!-- User Menu -->
+        <div class="relative">
+          <button id="userMenuBtn" class="focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A4 4 0 0110 16h4a4 4 0 014.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </button>
+
+          <div id="userDropdown" class="absolute right-0 mt-2 w-40 bg-gray-800 text-white rounded shadow-lg hidden z-50">
+            <div id="guestMenu" class="block">
+              <a href="login.html" class="block px-4 py-2 hover:bg-gray-700">Login</a>
+              <a href="signup.html" class="block px-4 py-2 hover:bg-gray-700">Sign Up</a>
+            </div>
+            <div id="userMenu" class="hidden">
+              <div class="px-4 py-2 text-sm text-gray-300" id="userInfo">Welcome!</div>
+              <hr class="border-gray-600">
+              <button id="logoutBtn" class="w-full text-left px-4 py-2 hover:bg-gray-700 text-red-400">Logout</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <section id="hero" class="h-screen slideshow relative flex items-center justify-start">
+    <div class="absolute inset-0 bg-black opacity-50"></div>
+    <div class="relative z-10 px-8 max-w-2xl">
+      <h1 class="text-4xl md:text-5xl font-extrabold leading-tight mb-4">An exquisite new standard in planning your next bespoke escape!</h1>
+      <p class="text-lg mb-6">Unleash your spirit in a world bursting with color and discovery.</p>
+      <a href="explore.html" class="inline-block bg-black hover:bg-stone-500 text-white font-semibold px-6 py-3 rounded shadow">Explore More →</a>
+    </div>
+  </section>
+
+  <script>
+    const hero = document.getElementById("hero");
+    const images = ["images/mountains.jpg", "images/highway.jpg", "images/beach.jpg", "images/historical.png"];
+    let current = 0;
+
+    function changeBackground() {
+      hero.style.backgroundImage = `url('${images[current]}')`;
+      current = (current + 1) % images.length;
+    }
+
+    changeBackground();
+    setInterval(changeBackground, 4000);
+
+    // User menu functionality
+    const userBtn = document.getElementById('userMenuBtn');
+    const dropdown = document.getElementById('userDropdown');
+    const guestMenu = document.getElementById('guestMenu');
+    const userMenu = document.getElementById('userMenu');
+    const userInfo = document.getElementById('userInfo');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // Check user login status
+    function checkUserStatus() {
+      const memberData = localStorage.getItem('memberData');
+      const adminData = localStorage.getItem('adminData');
+      
+      if (memberData) {
+        const user = JSON.parse(memberData);
+        guestMenu.classList.add('hidden');
+        userMenu.classList.remove('hidden');
+        userInfo.textContent = `Welcome, ${user.username}!`;
+      } else if (adminData) {
+        const user = JSON.parse(adminData);
+        guestMenu.classList.add('hidden');
+        userMenu.classList.remove('hidden');
+        userInfo.textContent = `Admin: ${user.username}`;
+      } else {
+        guestMenu.classList.remove('hidden');
+        userMenu.classList.add('hidden');
+      }
+    }
+
+    userBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', () => {
+      dropdown.classList.add('hidden');
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('memberData');
+      localStorage.removeItem('adminData');
+      location.reload();
+    });
+
+    // Initialize user status
+    checkUserStatus();
+  </script>
+
+</body>
+</html>

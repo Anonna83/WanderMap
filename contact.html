@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact - WanderMap</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: #000; color: #fff; }
+    .gradient-bg { background: linear-gradient(to right, #1e3a8a, #2563eb); }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="flex justify-between items-center bg-black text-white p-4">
+    <h1 class="text-xl font-bold">WanderMap</h1>
+    <ul class="flex gap-6 text-sm">
+      <li><a href="index.html" class="hover:underline">Home</a></li>
+      <li><a href="explore.html" class="hover:underline">Explore</a></li>
+      <li><a href="journal.html" class="hover:underline">Journals</a></li>
+      <li><a href="services.html" class="hover:underline">Services</a></li>
+      <li><a href="review.html" class="hover:underline">Review</a></li>
+      <li><a href="blog.html" class="hover:underline">Blog</a></li>
+      <li><a href="contact.html" class="hover:underline">Contact</a></li>
+      <li id="logoutBtn" style="display:none;">
+        <button class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded">Logout</button>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Header -->
+  <section class="gradient-bg text-center py-8">
+    <h2 class="text-3xl font-bold text-yellow-300">Contact Us</h2>
+    <p class="text-sm mt-2 text-white">Send us a message or check for admin replies!</p>
+  </section>
+
+  <!-- Notification -->
+  <div id="notification" class="fixed top-4 right-4 z-50"></div>
+
+  <!-- User Contact Form -->
+  <div id="userContactSection" class="max-w-md mx-auto border border-gray-700 p-6 bg-gray-900 rounded-md mt-8">
+    <h3 class="text-xl font-bold mb-4 text-yellow-300 text-center">Send a Message</h3>
+    <form id="contactForm">
+      <input type="text" id="contactName" placeholder="Name *" class="w-full p-2 rounded bg-gray-800 border border-gray-600 mb-3" required />
+      <input type="email" id="contactEmail" placeholder="Email *" class="w-full p-2 rounded bg-gray-800 border border-gray-600 mb-3" required />
+      <textarea id="contactMessage" placeholder="Your message..." rows="4" class="w-full p-2 rounded bg-gray-800 border border-gray-600 mb-3" required></textarea>
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white p-2 rounded">Send Message</button>
+    </form>
+  </div>
+
+  <!-- User Check Replies -->
+  <div class="max-w-md mx-auto mt-8">
+    <div class="border border-gray-700 p-4 bg-gray-900 rounded-md">
+      <h3 class="text-lg font-bold text-yellow-300 mb-2">Check Replies</h3>
+      <form id="checkRepliesForm" class="flex gap-2 mb-2">
+        <input type="email" id="checkEmail" placeholder="Enter your email to see replies" class="flex-1 p-2 rounded bg-gray-800 border border-gray-600" required />
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Check</button>
+      </form>
+      <div id="userMessages"></div>
+    </div>
+  </div>
+
+  <!-- Admin Section -->
+  <div id="adminSection" class="max-w-2xl mx-auto mt-12" style="display:none;">
+    <div class="border border-gray-700 p-6 bg-gray-900 rounded-md">
+      <h3 class="text-2xl font-bold text-yellow-300 mb-4">All Messages (Admin)</h3>
+      <div id="adminMessages"></div>
+    </div>
+  </div>
+
+  <script>
+    let currentUserType = 'user';
+    let currentUser = null;
+
+    // Show notification
+    function showNotification(message, type = 'success') {
+      const notification = document.getElementById('notification');
+      notification.innerHTML = `<div class="px-6 py-3 rounded shadow-lg mb-2 text-white ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}">${message}</div>`;
+      setTimeout(() => { notification.innerHTML = ''; }, 2500);
+    }
+
+    // Check user login status
+    function checkUserStatus() {
+      const adminData = localStorage.getItem('adminData');
+      if (adminData) {
+        currentUser = JSON.parse(adminData);
+        currentUserType = 'admin';
+        document.getElementById('adminSection').style.display = 'block';
+        document.getElementById('userContactSection').style.display = 'none';
+      } else {
+        currentUserType = 'user';
+        document.getElementById('adminSection').style.display = 'none';
+        document.getElementById('userContactSection').style.display = 'block';
+      }
+    }
+
+    // User: Send message
+    document.getElementById('contactForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('contactName').value.trim();
+      const email = document.getElementById('contactEmail').value.trim();
+      const message = document.getElementById('contactMessage').value.trim();
+      if (!name || !email || !message) {
+        showNotification('All fields are required!', 'error');
+        return;
+      }
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, message })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showNotification('Message sent!');
+          document.getElementById('contactForm').reset();
+        } else {
+          showNotification(data.error || 'Failed to send message', 'error');
+        }
+      } catch (err) {
+        showNotification('Failed to send message', 'error');
+      }
+    });
+
+    // User: Check replies
+    document.getElementById('checkRepliesForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('checkEmail').value.trim();
+      if (!email) return;
+      try {
+        const res = await fetch(`/api/contact?email=${encodeURIComponent(email)}`);
+        const data = await res.json();
+        const container = document.getElementById('userMessages');
+        if (res.ok && data.messages.length) {
+          container.innerHTML = data.messages.map(msg => `
+            <div class="mb-4 p-3 rounded bg-gray-800 border border-gray-700">
+              <div class="text-gray-300 mb-1">${msg.message}</div>
+              <div class="text-xs text-gray-400">Sent: ${new Date(msg.created_at).toLocaleString()}</div>
+              <div class="mt-2">
+                <span class="font-bold text-yellow-300">Admin Reply:</span>
+                <span class="${msg.reply ? 'text-green-400' : 'text-gray-400'}">${msg.reply ? msg.reply : 'No reply yet.'}</span>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          container.innerHTML = '<div class="text-gray-400">No messages found for this email.</div>';
+        }
+      } catch (err) {
+        document.getElementById('userMessages').innerHTML = '<div class="text-red-500">Failed to load messages.</div>';
+      }
+    });
+
+    // Admin: Load all messages
+    async function loadAdminMessages() {
+      const container = document.getElementById('adminMessages');
+      container.innerHTML = '<div class="text-gray-400">Loading...</div>';
+      try {
+        const res = await fetch('/api/contact');
+        const data = await res.json();
+        if (res.ok && data.messages.length) {
+          container.innerHTML = data.messages.map(msg => `
+            <div class="mb-6 p-4 rounded bg-gray-800 border border-gray-700">
+              <div class="flex justify-between items-center mb-2">
+                <div>
+                  <span class="font-bold text-yellow-300">${msg.name}</span>
+                  <span class="text-xs text-gray-400 ml-2">${msg.email}</span>
+                </div>
+                <span class="text-xs text-gray-400">${new Date(msg.created_at).toLocaleString()}</span>
+              </div>
+              <div class="mb-2 text-gray-300">${msg.message}</div>
+              <div class="mb-2">
+                <span class="font-bold text-yellow-300">Reply:</span>
+                <span class="${msg.reply ? 'text-green-400' : 'text-gray-400'}" id="replyText${msg.id}">${msg.reply ? msg.reply : 'No reply yet.'}</span>
+              </div>
+              <form class="replyForm flex gap-2 mt-2" data-id="${msg.id}">
+                <input type="text" class="flex-1 p-2 rounded bg-gray-700 border border-gray-600" placeholder="Type reply..." />
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Send</button>
+              </form>
+            </div>
+          `).join('');
+
+          // Add event listeners for all reply forms
+          document.querySelectorAll('.replyForm').forEach(form => {
+            form.addEventListener('submit', async function(e) {
+              e.preventDefault();
+              const id = this.getAttribute('data-id');
+              const reply = this.querySelector('input').value.trim();
+              if (!reply) return;
+              try {
+                const res = await fetch('/api/contact/reply', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ id, reply })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                  showNotification('Reply sent!');
+                  document.getElementById('replyText' + id).textContent = reply;
+                  document.getElementById('replyText' + id).className = 'text-green-400';
+                  this.reset();
+                } else {
+                  showNotification(data.error || 'Failed to send reply', 'error');
+                }
+              } catch (err) {
+                showNotification('Failed to send reply', 'error');
+              }
+            });
+          });
+        } else {
+          container.innerHTML = '<div class="text-gray-400">No messages found.</div>';
+        }
+      } catch (err) {
+        container.innerHTML = '<div class="text-red-500">Failed to load messages.</div>';
+      }
+    }
+
+    // Logout button
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+      localStorage.removeItem('adminData');
+      localStorage.removeItem('memberData');
+      location.reload();
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      checkUserStatus();
+      if (currentUserType === 'admin') loadAdminMessages();
+    });
+    if (currentUserType === 'admin') loadAdminMessages();
+  </script>
+</body>
+</html>

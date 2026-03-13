@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore the World - Travel Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap');
+        
+        .explore-font {
+            font-family: cursive;
+        }
+        
+        body {
+            font-family: cursive;
+        }
+        
+        * {
+            font-family: cursive;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .slide-in-left {
+            animation: slideInLeft 0.8s ease-out;
+        }
+        
+        @keyframes slideInLeft {
+            from { transform: translateX(-100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .slide-in-right {
+            animation: slideInRight 0.8s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .filter-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .destination-card {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .destination-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
+            z-index: 1;
+        }
+        
+        .destination-card:hover::before {
+            left: 100%;
+        }
+        
+        .destination-card:hover {
+            transform: translateY(-20px) rotateY(5deg);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.98);
+        }
+        
+        .destination-card:hover .card-image {
+            transform: scale(1.1) rotate(2deg);
+        }
+        
+        .card-image {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .image-overlay {
+            background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.7) 100%);
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .search-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .search-box:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .floating-icons {
+            position: absolute;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .floating-icons:nth-child(2) {
+            animation-delay: -2s;
+        }
+        
+        .floating-icons:nth-child(3) {
+            animation-delay: -4s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(5deg); }
+            66% { transform: translateY(-10px) rotate(-5deg); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 min-h-screen">
+    <!-- Floating Background Icons -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <i class="fas fa-globe-americas floating-icons text-white/10 text-6xl top-20 left-10"></i>
+        <i class="fas fa-mountain floating-icons text-white/10 text-4xl top-40 right-20"></i>
+        <i class="fas fa-water floating-icons text-white/10 text-5xl bottom-40 left-20"></i>
+        <i class="fas fa-city floating-icons text-white/10 text-4xl bottom-20 right-10"></i>
+        <i class="fas fa-tree floating-icons text-white/10 text-3xl top-60 left-1/2"></i>
+        <i class="fas fa-umbrella-beach floating-icons text-white/10 text-5xl top-80 right-1/3"></i>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-effect border-b border-white/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-globe text-2xl text-white"></i>
+                    <span class="text-2xl font-bold text-white explore-font">WanderMap</span>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-white/80 hover:text-white transition-colors duration-300">
+                        <i class="fas fa-home mr-2"></i>Home
+                    </a>
+                    <a href="explore.html" class="text-white font-semibold">
+                        <i class="fas fa-map-marked-alt mr-2"></i>Explore
+                    </a>
+                    <a href="journal.html" class="text-white/80 hover:text-white transition-colors duration-300">
+                        <i class="fas fa-book-open mr-2"></i>Journal
+                    </a>
+                    <a href="services.html" class="text-white/80 hover:text-white transition-colors duration-300">
+                        <i class="fas fa-concierge-bell mr-2"></i>Services
+                    </a>
+                    <a href="review.html" class="text-white/80 hover:text-white transition-colors duration-300">
+                        <i class="fas fa-star mr-2"></i>Review
+                    </a>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button id="mobileMenuBtn" class="text-white hover:text-blue-400 focus:outline-none transition-colors duration-300">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Side Menu -->
+    <div id="mobileMenu" class="fixed top-0 right-0 h-full w-80 bg-gray-900 transform translate-x-full transition-transform duration-300 ease-in-out z-50 md:hidden">
+        <div class="flex items-center justify-between p-6 border-b border-gray-700">
+            <span class="text-xl font-bold text-white">Menu</span>
+            <button id="closeMenuBtn" class="text-gray-300 hover:text-white transition-colors duration-300">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <div class="p-6">
+            <div class="space-y-6">
+                <a href="index.html" class="flex items-center text-gray-300 hover:text-blue-400 py-3 px-4 rounded-lg hover:bg-gray-800 transition-all duration-300">
+                    <i class="fas fa-home mr-4 text-lg"></i>
+                    <span>Home</span>
+                    <i class="fas fa-chevron-right ml-auto text-sm opacity-50"></i>
+                </a>
+                
+                <a href="explore.html" class="flex items-center text-blue-400 font-semibold py-3 px-4 rounded-lg bg-blue-900 bg-opacity-20 hover:bg-opacity-30 transition-all duration-300">
+                    <i class="fas fa-map-marked-alt mr-4 text-lg"></i>
+                    <span>Explore</span>
+                    <i class="fas fa-chevron-right ml-auto text-sm opacity-50"></i>
+                </a>
+                
+                <a href="journal.html" class="flex items-center text-gray-300 hover:text-blue-400 py-3 px-4 rounded-lg hover:bg-gray-800 transition-all duration-300">
+                    <i class="fas fa-book-open mr-4 text-lg"></i>
+                    <span>Journal</span>
+                    <i class="fas fa-chevron-right ml-auto text-sm opacity-50"></i>
+                </a>
+                
+                <a href="services.html" class="flex items-center text-gray-300 hover:text-blue-400 py-3 px-4 rounded-lg hover:bg-gray-800 transition-all duration-300">
+                    <i class="fas fa-concierge-bell mr-4 text-lg"></i>
+                    <span>Services</span>
+                    <i class="fas fa-chevron-right ml-auto text-sm opacity-50"></i>
+                </a>
+                
+                <a href="review.html" class="flex items-center text-gray-300 hover:text-blue-400 py-3 px-4 rounded-lg hover:bg-gray-800 transition-all duration-300">
+                    <i class="fas fa-star mr-4 text-lg"></i>
+                    <span>Review</span>
+                    <i class="fas fa-chevron-right ml-auto text-sm opacity-50"></i>
+                </a>
+            </div>
+            
+            <!-- Social Links -->
+            <div class="mt-8 pt-6 border-t border-gray-700">
+                <h4 class="text-sm font-semibold text-gray-400 mb-4">Follow Us</h4>
+                <div class="flex space-x-4">
+                    <a href="#" class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700 transition-colors duration-300">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white hover:bg-pink-700 transition-colors duration-300">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center text-white hover:bg-blue-500 transition-colors duration-300">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center text-white hover:bg-red-700 transition-colors duration-300">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu Overlay -->
+    <div id="menuOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden"></div>
+
+    <!-- Main Content -->
+    <div class="pt-20 pb-12 px-4">
+        <div class="max-w-7xl mx-auto">
+            <!-- Header Section -->
+            <div class="text-center mb-12 slide-in-left">
+                <h1 class="text-5xl md:text-7xl font-bold text-white explore-font mb-6">
+                    Explore the World
+                </h1>
+                <p class="text-xl text-white/80 mb-8 max-w-3xl mx-auto">
+                    Discover breathtaking destinations, ancient wonders and natural marvels from every corner of our beautiful planet
+                </p>
+                
+                <!-- Search Box -->
+                <div class="max-w-md mx-auto mb-8">
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Search destinations..." 
+                                class="w-full px-6 py-4 text-white placeholder-white/60 search-box rounded-full focus:outline-none focus:ring-2 focus:ring-white/30">
+                        <button class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/60 hover:text-white transition-colors">
+                            <i class="fas fa-search text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Inspirational Quote -->
+                <div class="max-w-2xl mx-auto mt-8">
+                    <div class="stats-card rounded-lg p-6 text-center">
+                        <i class="fas fa-quote-left text-3xl text-white/60 mb-4"></i>
+                        <p class="text-lg text-white/90 italic">
+                            "The world is a book and those who do not travel read only one page."
+                        </p>
+                        <p class="text-sm text-white/70 mt-2">- Saint Augustine</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="mb-12 slide-in-right">
+                <h2 class="text-3xl font-bold text-white mb-6 text-center">Filter by Category</h2>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button class="filter-btn active bg-white/20 text-white px-6 py-3 rounded-full font-semibold" data-filter="all">
+                        <i class="fas fa-globe mr-2"></i>All Places
+                    </button>
+                    <button class="filter-btn bg-white/10 text-white/80 px-6 py-3 rounded-full font-semibold" data-filter="landmarks">
+                        <i class="fas fa-landmark mr-2"></i>Landmarks
+                    </button>
+                    <button class="filter-btn bg-white/10 text-white/80 px-6 py-3 rounded-full font-semibold" data-filter="nature">
+                        <i class="fas fa-mountain mr-2"></i>Nature
+                    </button>
+                    <button class="filter-btn bg-white/10 text-white/80 px-6 py-3 rounded-full font-semibold" data-filter="beaches">
+                        <i class="fas fa-umbrella-beach mr-2"></i>Beaches
+                    </button>
+                    <button class="filter-btn bg-white/10 text-white/80 px-6 py-3 rounded-full font-semibold" data-filter="cities">
+                        <i class="fas fa-city mr-2"></i>Cities
+                    </button>
+                    <button class="filter-btn bg-white/10 text-white/80 px-6 py-3 rounded-full font-semibold" data-filter="culture">
+                        <i class="fas fa-theater-masks mr-2"></i>Culture
+                    </button>
+                </div>
+            </div>
+
+            <!-- Destinations Grid -->
+            <div id="destinationsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Destination cards will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Destination data
+        const destinations = [
+            {
+                id: 1,
+                name: "Eiffel Tower",
+                country: "France",
+                city: "Paris",
+                category: "landmarks",
+                image: "images/eiffelTower.avif",
+                description: "The iconic symbol of Paris, standing 324 meters tall. This iron lattice tower offers breathtaking views of the City of Light.",
+                bestTime: "April to October",
+                highlights: ["City views", "Romantic atmosphere", "Historical significance"],
+                coordinates: { lat: 48.8584, lng: 2.2945 },
+                wikipedia: "https://en.wikipedia.org/wiki/Eiffel_Tower"
+            },
+            {
+                id: 2,
+                name: "Mount Fuji",
+                country: "Japan",
+                city: "Honshu",
+                category: "nature",
+                image: "images/mountFuji.avif",
+                description: "Japan's highest peak at 3,776 meters. This sacred mountain is a UNESCO World Heritage site and a symbol of Japan.",
+                bestTime: "July to September",
+                highlights: ["Hiking", "Sunrise views", "Cultural significance"],
+                coordinates: { lat: 35.3606, lng: 138.7274 },
+                wikipedia: "https://en.wikipedia.org/wiki/Mount_Fuji"
+            },
+            {
+                id: 3,
+                name: "Taj Mahal",
+                country: "India",
+                city: "Agra",
+                category: "landmarks",
+                image: "images/tajMahal.jpg",
+                description: "A stunning white marble mausoleum built by Emperor Shah Jahan in memory of his beloved wife Mumtaz Mahal.",
+                bestTime: "October to March",
+                highlights: ["Architecture", "Sunrise/sunset", "Love story"],
+                coordinates: { lat: 27.1751, lng: 78.0421 },
+                wikipedia: "https://en.wikipedia.org/wiki/Taj_Mahal"
+            },
+            {
+                id: 4,
+                name: "Great Barrier Reef",
+                country: "Australia",
+                city: "Queensland",
+                category: "nature",
+                image: "images/greatBarrierReef.jpg",
+                description: "The world's largest coral reef system, stretching over 2,300 kilometers. Home to thousands of marine species.",
+                bestTime: "June to October",
+                highlights: ["Snorkeling", "Diving", "Marine life"],
+                coordinates: { lat: -16.2864, lng: 145.3873 },
+                wikipedia: "https://en.wikipedia.org/wiki/Great_Barrier_Reef"
+            },
+            {
+                id: 5,
+                name: "Bondi Beach",
+                country: "Australia",
+                city: "Sydney",
+                category: "beaches",
+                image: "images/bondiBeach.jpg",
+                description: "One of Australia's most famous beaches, known for its golden sands, surf culture, and vibrant atmosphere.",
+                bestTime: "December to February",
+                highlights: ["Surfing", "Beach culture", "Coastal walks"],
+                coordinates: { lat: -33.8915, lng: 151.2767 },
+                wikipedia: "https://en.wikipedia.org/wiki/Bondi_Beach"
+            },
+            {
+                id: 6,
+                name: "Colosseum",
+                country: "Italy",
+                city: "Rome",
+                category: "landmarks",
+                image: "images/Colosseum.jpg",
+                description: "The largest ancient amphitheater ever built, symbol of the Roman Empire's power and engineering prowess.",
+                bestTime: "March to May, September to November",
+                highlights: ["History", "Architecture", "Gladiator stories"],
+                coordinates: { lat: 41.8902, lng: 12.4922 },
+                wikipedia: "https://en.wikipedia.org/wiki/Colosseum"
+            },
+            {
+                id: 7,
+                name: "Grand Canyon",
+                country: "USA",
+                city: "Arizona",
+                category: "nature",
+                image: "images/grandCanyon.jpg",
+                description: "A massive gorge carved by the Colorado River over millions of years, revealing Earth's geological history.",
+                bestTime: "March to May, September to November",
+                highlights: ["Hiking", "Scenic views", "Geology"],
+                coordinates: { lat: 36.1069, lng: -112.1129 },
+                wikipedia: "https://en.wikipedia.org/wiki/Grand_Canyon"
+            },
+            {
+                id: 8,
+                name: "Sagrada Familia",
+                country: "Spain",
+                city: "Barcelona",
+                category: "landmarks",
+                image: "images/sagradaFamilia.jpg",
+                description: "Antoni Gaudí's masterpiece, a stunning basilica that combines Gothic and Art Nouveau architecture.",
+                bestTime: "March to May, September to November",
+                highlights: ["Architecture", "Stained glass", "Gaudí's vision"],
+                coordinates: { lat: 41.4036, lng: 2.1744 },
+                wikipedia: "https://en.wikipedia.org/wiki/Sagrada_Familia"
+            },
+            {
+                id: 9,
+                name: "Bali Beaches",
+                country: "Indonesia",
+                city: "Bali",
+                category: "beaches",
+                image: "images/baliBeach.webp",
+                description: "Tropical paradise with pristine beaches, crystal clear waters, and vibrant coral reefs.",
+                bestTime: "April to October",
+                highlights: ["Beach relaxation", "Water sports", "Island culture"],
+                coordinates: { lat: -8.3405, lng: 115.0920 },
+                wikipedia: "https://en.wikipedia.org/wiki/Bali"
+            },
+            {
+                id: 10,
+                name: "Pyramids of Giza",
+                country: "Egypt",
+                city: "Cairo",
+                category: "landmarks",
+                image: "images/pyramids.jpg",
+                description: "Ancient wonders of the world, built as tombs for pharaohs over 4,500 years ago.",
+                bestTime: "October to April",
+                highlights: ["Ancient history", "Archaeology", "Desert landscape"],
+                coordinates: { lat: 29.9792, lng: 31.1342 },
+                wikipedia: "https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza"
+            },
+            {
+                id: 11,
+                name: "Sydney Opera House",
+                country: "Australia",
+                city: "Sydney",
+                category: "landmarks",
+                image: "images/sydneyOperaHouse.jpg",
+                description: "Iconic performing arts center with distinctive sail-like shells, a UNESCO World Heritage site.",
+                bestTime: "September to November, March to May",
+                highlights: ["Architecture", "Performances", "Harbor views"],
+                coordinates: { lat: -33.8568, lng: 151.2153 },
+                wikipedia: "https://en.wikipedia.org/wiki/Sydney_Opera_House"
+            },
+            {
+                id: 12,
+                name: "Iguazu Falls",
+                country: "Brazil/Argentina",
+                city: "Border",
+                category: "nature",
+                image: "images/iguazuFalls.jpg",
+                description: "One of the world's most spectacular waterfalls, with 275 individual falls spanning nearly 2 miles.",
+                bestTime: "March to May, August to October",
+                highlights: ["Waterfalls", "Rainforest", "Wildlife"],
+                coordinates: { lat: -25.6953, lng: -54.4367 },
+                wikipedia: "https://en.wikipedia.org/wiki/Iguazu_Falls"
+            },
+            {
+                id: 13,
+                name: "Louvre Museum",
+                country: "France",
+                city: "Paris",
+                category: "culture",
+                image: "images/louvreMuseum.webp",
+                description: "World's largest art museum, home to the Mona Lisa and thousands of priceless artworks.",
+                bestTime: "October to April",
+                highlights: ["Art masterpieces", "History", "Architecture"],
+                coordinates: { lat: 48.8606, lng: 2.3376 },
+                wikipedia: "https://en.wikipedia.org/wiki/Louvre"
+            },
+            {
+                id: 14,
+                name: "Venice Canals",
+                country: "Italy",
+                city: "Venice",
+                category: "cities",
+                image: "images/veniceCanals.jpeg",
+                description: "The floating city built on 118 small islands, connected by canals and bridges.",
+                bestTime: "March to May, September to November",
+                highlights: ["Gondola rides", "Architecture", "Romance"],
+                coordinates: { lat: 45.4408, lng: 12.3155 },
+                wikipedia: "https://en.wikipedia.org/wiki/Venice"
+            },
+            {
+                id: 15,
+                name: "Christ the Redeemer",
+                country: "Brazil",
+                city: "Rio de Janeiro",
+                category: "landmarks",
+                image: "images/christRedeemer.jpg",
+                description: "Iconic statue of Jesus Christ overlooking Rio de Janeiro from the peak of Corcovado Mountain.",
+                bestTime: "March to May, September to November",
+                highlights: ["City views", "Religious significance", "Sunset"],
+                coordinates: { lat: -22.9519, lng: -43.2105 },
+                wikipedia: "https://en.wikipedia.org/wiki/Christ_the_Redeemer_(statue)"
+            },
+            {
+                id: 16,
+                name: "Alhambra",
+                country: "Spain",
+                city: "Granada",
+                category: "landmarks",
+                image: "images/alhambra.jpeg",
+                description: "Stunning Moorish palace and fortress complex, a masterpiece of Islamic architecture.",
+                bestTime: "March to May, September to November",
+                highlights: ["Islamic architecture", "Gardens", "History"],
+                coordinates: { lat: 37.1760, lng: -3.5976 },
+                wikipedia: "https://en.wikipedia.org/wiki/Alhambra"
+            },
+            {
+                id: 17,
+                name: "Uluru",
+                country: "Australia",
+                city: "Northern Territory",
+                category: "nature",
+                image: "images/uluru.webp",
+                description: "Sacred red sandstone monolith in the heart of Australia's Red Centre.",
+                bestTime: "May to September",
+                highlights: ["Sunrise/sunset", "Indigenous culture", "Desert landscape"],
+                coordinates: { lat: -25.3444, lng: 131.0369 },
+                wikipedia: "https://en.wikipedia.org/wiki/Uluru"
+            },
+            {
+                id: 18,
+                name: "Fushimi Inari Shrine",
+                country: "Japan",
+                city: "Kyoto",
+                category: "culture",
+                image: "images/Fushimi-Inari-Shrine.webp",
+                description: "Famous for its thousands of vermilion torii gates, leading to the sacred Mount Inari.",
+                bestTime: "March to May, October to November",
+                highlights: ["Torii gates", "Shinto culture", "Hiking"],
+                coordinates: { lat: 34.9671, lng: 135.7727 },
+                wikipedia: "https://en.wikipedia.org/wiki/Fushimi_Inari-taisha"
+            },
+            {
+                id: 19,
+                name: "Copacabana Beach",
+                country: "Brazil",
+                city: "Rio de Janeiro",
+                category: "beaches",
+                image: "images/copacabana.jpg",
+                description: "Famous beach known for its golden sand, vibrant atmosphere, and stunning sunsets.",
+                bestTime: "December to March",
+                highlights: ["Beach culture", "Sunsets", "Nightlife"],
+                coordinates: { lat: -22.9716, lng: -43.1826 },
+                wikipedia: "https://en.wikipedia.org/wiki/Copacabana,_Rio_de_Janeiro"
+            },
+            {
+                id: 20,
+                name: "Cinque Terre",
+                country: "Italy",
+                city: "Liguria",
+                category: "cities",
+                image: "images/cinqueTerre.jpeg",
+                description: "Five colorful villages perched on the Italian Riviera, connected by scenic hiking trails.",
+                bestTime: "April to October",
+                highlights: ["Hiking", "Coastal views", "Italian culture"],
+                coordinates: { lat: 44.1349, lng: 9.6844 },
+                wikipedia: "https://en.wikipedia.org/wiki/Cinque_Terre"
+            },
+            {
+                id: 21,
+                name: "Waikiki Beach",
+                country: "USA",
+                city: "Hawaii",
+                category: "beaches",
+                image: "images/waikikiBeach.jpg",
+                description: "Famous beach in Honolulu known for its gentle waves, perfect for surfing and swimming.",
+                bestTime: "April to October",
+                highlights: ["Surfing", "Beach activities", "Hawaiian culture"],
+                coordinates: { lat: 21.2790, lng: -157.8317 },
+                wikipedia: "https://en.wikipedia.org/wiki/Waikiki"
+            },
+            {
+                id: 22,
+                name: "Statue of Liberty",
+                country: "USA",
+                city: "New York",
+                category: "landmarks",
+                image: "images/statueOfLiberty.avif",
+                description: "Iconic symbol of freedom and democracy, welcoming visitors to New York Harbor.",
+                bestTime: "April to October",
+                highlights: ["History", "City views", "Symbol of freedom"],
+                coordinates: { lat: 40.6892, lng: -74.0445 },
+                wikipedia: "https://en.wikipedia.org/wiki/Statue_of_Liberty"
+            },
+            {
+                id: 23,
+                name: "Versailles Palace",
+                country: "France",
+                city: "Versailles",
+                category: "landmarks",
+                image: "images/versailles.webp",
+                description: "Opulent palace that was the seat of French royal power, featuring stunning gardens and architecture.",
+                bestTime: "April to October",
+                highlights: ["Royal history", "Gardens", "Architecture"],
+                coordinates: { lat: 48.8044, lng: 2.1232 },
+                wikipedia: "https://en.wikipedia.org/wiki/Palace_of_Versailles"
+            },
+            {
+                id: 24,
+                name: "Chamonix",
+                country: "France",
+                city: "French Alps",
+                category: "nature",
+                image: "images/chamonix.webp",
+                description: "Famous ski resort and mountaineering destination in the French Alps.",
+                bestTime: "December to March (skiing), June to September (hiking)",
+                highlights: ["Skiing", "Mountain views", "Adventure sports"],
+                coordinates: { lat: 45.9237, lng: 6.8694 },
+                wikipedia: "https://en.wikipedia.org/wiki/Chamonix"
+            },
+            {
+                id: 25,
+                name: "Great Wall of China",
+                country: "China",
+                city: "Beijing",
+                category: "landmarks",
+                image: "images/greatWall.jpg",
+                description: "Ancient fortification stretching over 13,000 miles, one of the most impressive architectural feats in human history.",
+                bestTime: "March to May, September to November",
+                highlights: ["History", "Hiking", "Architecture"],
+                coordinates: { lat: 40.4319, lng: 116.5704 },
+                wikipedia: "https://en.wikipedia.org/wiki/Great_Wall_of_China"
+            },
+            {
+                id: 26,
+                name: "Forbidden City",
+                country: "China",
+                city: "Beijing",
+                category: "landmarks",
+                image: "images/forbiddenCity.jpg",
+                description: "Imperial palace complex that served as the home of Chinese emperors for nearly 500 years.",
+                bestTime: "March to May, September to November",
+                highlights: ["Imperial history", "Architecture", "Cultural heritage"],
+                coordinates: { lat: 39.9163, lng: 116.3972 },
+                wikipedia: "https://en.wikipedia.org/wiki/Forbidden_City"
+            },
+            {
+                id: 27,
+                name: "Zhangjiajie National Forest",
+                country: "China",
+                city: "Hunan",
+                category: "nature",
+                image: "images/zhangjiajie.webp",
+                description: "Inspiration for Avatar's floating mountains, featuring towering sandstone pillars and lush forests.",
+                bestTime: "April to October",
+                highlights: ["Mountain views", "Hiking", "Natural beauty"],
+                coordinates: { lat: 29.3271, lng: 110.4792 },
+                wikipedia: "https://en.wikipedia.org/wiki/Wulingyuan"
+            },
+            {
+                id: 28,
+                name: "Phi Phi Islands",
+                country: "Thailand",
+                city: "Krabi",
+                category: "beaches",
+                image: "images/phiPhiIslands.jpg",
+                description: "Tropical paradise with crystal clear waters, limestone cliffs, and pristine beaches.",
+                bestTime: "November to April",
+                highlights: ["Beach activities", "Island hopping", "Snorkeling"],
+                coordinates: { lat: 7.7406, lng: 98.7784 },
+                wikipedia: "https://en.wikipedia.org/wiki/Phi_Phi_Islands"
+            },
+            {
+                id: 29,
+                name: "Grand Palace",
+                country: "Thailand",
+                city: "Bangkok",
+                category: "landmarks",
+                image: "images/grandPalace.webp",
+                description: "Stunning royal palace complex featuring traditional Thai architecture and the Emerald Buddha.",
+                bestTime: "November to February",
+                highlights: ["Royal architecture", "Buddhist temples", "Cultural heritage"],
+                coordinates: { lat: 13.7500, lng: 100.4913 },
+                wikipedia: "https://en.wikipedia.org/wiki/Grand_Palace"
+            },
+            {
+                id: 30,
+                name: "Chiang Mai Old City",
+                country: "Thailand",
+                city: "Chiang Mai",
+                category: "cities",
+                image: "images/chaingMaiOldCity.jpg",
+                description: "Historic walled city known for its temples, night markets, and traditional Thai culture.",
+                bestTime: "November to February",
+                highlights: ["Temples", "Night markets", "Thai culture"],
+                coordinates: { lat: 18.7883, lng: 98.9853 },
+                wikipedia: "https://en.wikipedia.org/wiki/Chiang_Mai"
+            },
+            {
+                id: 31,
+                name: "Hoi An Ancient Town",
+                country: "Vietnam",
+                city: "Hoi An",
+                category: "cities",
+                image: "images/hoiAn.jpg",
+                description: "UNESCO World Heritage site known for its well-preserved ancient architecture and lantern-lit streets.",
+                bestTime: "February to April, August to October",
+                highlights: ["Ancient architecture", "Lanterns", "Vietnamese culture"],
+                coordinates: { lat: 15.8801, lng: 108.3380 },
+                wikipedia: "https://en.wikipedia.org/wiki/Hoi_An"
+            },
+            {
+                id: 32,
+                name: "Ha Long Bay",
+                country: "Vietnam",
+                city: "Quang Ninh",
+                category: "nature",
+                image: "images/haLongBay.jpg",
+                description: "UNESCO World Heritage site featuring thousands of limestone karsts and isles in various shapes and sizes.",
+                bestTime: "March to May, September to November",
+                highlights: ["Cruise tours", "Kayaking", "Cave exploration"],
+                coordinates: { lat: 20.9101, lng: 107.1839 },
+                wikipedia: "https://en.wikipedia.org/wiki/Ha_Long_Bay"
+            },
+            {
+                id: 33,
+                name: "Phu Quoc Island",
+                country: "Vietnam",
+                city: "Kien Giang",
+                category: "beaches",
+                image: "images/phuQuoc.avif",
+                description: "Tropical island paradise with pristine beaches, crystal clear waters, and lush forests.",
+                bestTime: "November to March",
+                highlights: ["Beach relaxation", "Water sports", "Island life"],
+                coordinates: { lat: 10.2277, lng: 103.9602 },
+                wikipedia: "https://en.wikipedia.org/wiki/Phu_Quoc"
+            },
+            {
+                id: 34,
+                name: "Gyeongbokgung Palace",
+                country: "South Korea",
+                city: "Seoul",
+                category: "landmarks",
+                image: "images/gyeongbokgung.webp",
+                description: "Main royal palace of the Joseon dynasty, featuring traditional Korean architecture and changing of the guard ceremony.",
+                bestTime: "March to May, September to November",
+                highlights: ["Royal history", "Traditional architecture", "Cultural ceremonies"],
+                coordinates: { lat: 37.5796, lng: 126.9770 },
+                wikipedia: "https://en.wikipedia.org/wiki/Gyeongbokgung"
+            },
+            {
+                id: 35,
+                name: "Haeundae Beach",
+                country: "South Korea",
+                city: "Busan",
+                category: "beaches",
+                image: "images/haeundae.JPG",
+                description: "Famous beach known for its fine sand, clear waters, and vibrant beach culture.",
+                bestTime: "June to August",
+                highlights: ["Beach activities", "Water sports", "Korean culture"],
+                coordinates: { lat: 35.1586, lng: 129.1603 },
+                wikipedia: "https://en.wikipedia.org/wiki/Haeundae_Beach"
+            },
+            {
+                id: 36,
+                name: "Jeju Island",
+                country: "South Korea",
+                city: "Jeju",
+                category: "nature",
+                image: "images/jejuIsland.jpeg",
+                description: "Volcanic island known for its natural beauty, waterfalls, and unique culture.",
+                bestTime: "March to May, September to November",
+                highlights: ["Volcanic landscape", "Waterfalls", "Island culture"],
+                coordinates: { lat: 33.4996, lng: 126.5312 },
+                wikipedia: "https://en.wikipedia.org/wiki/Jeju_Island"
+            },
+            {
+                id: 37,
+                name: "Komodo National Park",
+                country: "Indonesia",
+                city: "East Nusa Tenggara",
+                category: "nature",
+                image: "images/komodo.avif",
+                description: "Home to the famous Komodo dragons and stunning pink beaches with crystal clear waters.",
+                bestTime: "April to December",
+                highlights: ["Komodo dragons", "Pink beaches", "Diving"],
+                coordinates: { lat: -8.5833, lng: 119.4500 },
+                wikipedia: "https://en.wikipedia.org/wiki/Komodo_National_Park"
+            },
+            {
+                id: 38,
+                name: "Borobudur Temple",
+                country: "Indonesia",
+                city: "Central Java",
+                category: "landmarks",
+                image: "images/borobudur.jpg",
+                description: "World's largest Buddhist temple, featuring intricate stone carvings and stunning sunrise views.",
+                bestTime: "April to October",
+                highlights: ["Buddhist architecture", "Sunrise views", "Cultural heritage"],
+                coordinates: { lat: -7.6079, lng: 110.2038 },
+                wikipedia: "https://en.wikipedia.org/wiki/Borobudur"
+            },
+            {
+                id: 39,
+                name: "Goa Beaches",
+                country: "India",
+                city: "Goa",
+                category: "beaches",
+                image: "images/goaBeaches.jpg",
+                description: "Famous for its golden beaches, Portuguese colonial architecture, and vibrant nightlife.",
+                bestTime: "November to March",
+                highlights: ["Beach culture", "Colonial architecture", "Nightlife"],
+                coordinates: { lat: 15.2993, lng: 74.1240 },
+                wikipedia: "https://en.wikipedia.org/wiki/Goa"
+            },
+            {
+                id: 40,
+                name: "Jaipur Palace",
+                country: "India",
+                city: "Jaipur",
+                category: "landmarks",
+                image: "images/jaipurPalace.webp",
+                description: "Pink City's royal palace featuring stunning architecture and rich cultural heritage.",
+                bestTime: "October to March",
+                highlights: ["Royal architecture", "Cultural heritage", "Pink city"],
+                coordinates: { lat: 26.9124, lng: 75.7873 },
+                wikipedia: "https://en.wikipedia.org/wiki/City_Palace,_Jaipur"
+            },
+            {
+                id: 41,
+                name: "Lalbagh Fort",
+                country: "Bangladesh",
+                city: "Dhaka",
+                category: "landmarks",
+                image: "images/lalbaghFort.jpeg",
+                description: "17th-century Mughal fort complex featuring beautiful gardens and historical architecture.",
+                bestTime: "October to March",
+                highlights: ["Mughal architecture", "Historical gardens", "Cultural heritage"],
+                coordinates: { lat: 23.7169, lng: 90.3886 },
+                wikipedia: "https://en.wikipedia.org/wiki/Lalbagh_Fort"
+            },
+            {
+                id: 42,
+                name: "Cox's Bazar",
+                country: "Bangladesh",
+                city: "Chittagong",
+                category: "beaches",
+                image: "images/coxsBazar.jpg",
+                description: "World's longest natural sea beach, stretching over 120 kilometers along the Bay of Bengal.",
+                bestTime: "October to March",
+                highlights: ["Longest beach", "Sunset views", "Local culture"],
+                coordinates: { lat: 21.4272, lng: 92.0058 },
+                wikipedia: "https://en.wikipedia.org/wiki/Cox%27s_Bazar"
+            },
+            {
+                id: 43,
+                name: "Saint Martin's Island",
+                country: "Bangladesh",
+                city: "Cox's Bazar",
+                category: "beaches",
+                image: "images/saintMartins.jpg",
+                description: "Only coral island in Bangladesh, known for its pristine beaches and crystal clear waters.",
+                bestTime: "November to March",
+                highlights: ["Coral reefs", "Beach activities", "Island life"],
+                coordinates: { lat: 20.6147, lng: 92.3233 },
+                wikipedia: "https://en.wikipedia.org/wiki/Saint_Martin%27s_Island"
+            },
+            {
+                id: 44,
+                name: "Sundarbans",
+                country: "Bangladesh",
+                city: "Khulna",
+                category: "nature",
+                image: "images/sundarbans.jpeg",
+                description: "World's largest mangrove forest and UNESCO World Heritage site, home to Bengal tigers.",
+                bestTime: "November to March",
+                highlights: ["Mangrove forest", "Wildlife", "Eco-tourism"],
+                coordinates: { lat: 22.1050, lng: 89.1070 },
+                wikipedia: "https://en.wikipedia.org/wiki/Sundarbans"
+            },
+            {
+                id: 45,
+                name: "Srimangal",
+                country: "Bangladesh",
+                city: "Sylhet",
+                category: "nature",
+                image: "images/srimangal.jpg",
+                description: "Tea capital of Bangladesh, featuring rolling tea gardens and lush green landscapes.",
+                bestTime: "October to March",
+                highlights: ["Tea gardens", "Nature walks", "Local culture"],
+                coordinates: { lat: 24.3065, lng: 91.7296 },
+                wikipedia: "https://en.wikipedia.org/wiki/Sreemangal_Upazila"
+            },
+            {
+                id: 46,
+                name: "Mahasthangarh",
+                country: "Bangladesh",
+                city: "Bogura",
+                category: "landmarks",
+                image: "images/mahasthangarh.jpg",
+                description: "Ancient archaeological site and the oldest urban archaeological site in Bangladesh.",
+                bestTime: "October to March",
+                highlights: ["Archaeological site", "Ancient history", "Cultural heritage"],
+                coordinates: { lat: 24.9640, lng: 89.3428 },
+                wikipedia: "https://en.wikipedia.org/wiki/Mahasthangarh"
+            },
+            {
+                id: 47,
+                name: "Luxor Temple",
+                country: "Egypt",
+                city: "Luxor",
+                category: "landmarks",
+                image: "images/luxorTemple.jpg",
+                description: "Ancient Egyptian temple complex dedicated to the rejuvenation of kingship.",
+                bestTime: "October to April",
+                highlights: ["Ancient Egyptian history", "Temple architecture", "Archaeological site"],
+                coordinates: { lat: 25.6872, lng: 32.6396 },
+                wikipedia: "https://en.wikipedia.org/wiki/Luxor_Temple"
+            },
+            {
+                id: 48,
+                name: "Hurghada",
+                country: "Egypt",
+                city: "Red Sea",
+                category: "beaches",
+                image: "images/hurghada.webp",
+                description: "Famous Red Sea resort town known for its beautiful beaches and world-class diving.",
+                bestTime: "March to May, September to November",
+                highlights: ["Red Sea diving", "Beach activities", "Water sports"],
+                coordinates: { lat: 27.2579, lng: 33.8116 },
+                wikipedia: "https://en.wikipedia.org/wiki/Hurghada"
+            },
+            {
+                id: 49,
+                name: "Mont Saint-Michel",
+                country: "France",
+                city: "Normandy",
+                category: "landmarks",
+                image: "images/montSaintMichel.jpg",
+                description: "Medieval abbey perched on a rocky tidal island, one of France's most iconic landmarks.",
+                bestTime: "April to October",
+                highlights: ["Medieval architecture", "Tidal island", "Historical significance"],
+                coordinates: { lat: 48.6361, lng: -1.5115 },
+                wikipedia: "https://en.wikipedia.org/wiki/Mont-Saint-Michel"
+            },
+            {
+                id: 50,
+                name: "French Riviera",
+                country: "France",
+                city: "Côte d'Azur",
+                category: "beaches",
+                image: "images/frenchRiviera.jpg",
+                description: "Glittering coastline known for its glamorous resorts, beautiful beaches, and Mediterranean charm.",
+                bestTime: "May to September",
+                highlights: ["Luxury resorts", "Mediterranean beaches", "Glamorous atmosphere"],
+                coordinates: { lat: 43.7102, lng: 7.2620 },
+                wikipedia: "https://en.wikipedia.org/wiki/French_Riviera"
+            },
+            {
+                id: 51,
+                name: "Costa del Sol",
+                country: "Spain",
+                city: "Andalusia",
+                category: "beaches",
+                image: "images/costaDelSol.jpg",
+                description: "Sunny coast of southern Spain known for its beautiful beaches and vibrant nightlife.",
+                bestTime: "May to October",
+                highlights: ["Mediterranean beaches", "Spanish culture", "Nightlife"],
+                coordinates: { lat: 36.7213, lng: -4.4217 },
+                wikipedia: "https://en.wikipedia.org/wiki/Costa_del_Sol"
+            },
+            {
+                id: 52,
+                name: "Twelve Apostles",
+                country: "Australia",
+                city: "Victoria",
+                category: "nature",
+                image: "images/twelveApostles.jpg",
+                description: "Spectacular limestone stacks rising from the Southern Ocean along the Great Ocean Road.",
+                bestTime: "March to May, September to November",
+                highlights: ["Coastal scenery", "Photography", "Great Ocean Road"],
+                coordinates: { lat: -38.6636, lng: 143.1050 },
+                wikipedia: "https://en.wikipedia.org/wiki/Twelve_Apostles_(Victoria)"
+            },
+            {
+                id: 53,
+                name: "Daintree Rainforest",
+                country: "Australia",
+                city: "Queensland",
+                category: "nature",
+                image: "images/daintree.jpg",
+                description: "World's oldest tropical rainforest, home to unique wildlife and ancient ecosystems.",
+                bestTime: "May to October",
+                highlights: ["Rainforest exploration", "Wildlife", "Ancient ecosystems"],
+                coordinates: { lat: -16.1667, lng: 145.4167 },
+                wikipedia: "https://en.wikipedia.org/wiki/Daintree_Rainforest"
+            },
+            {
+                id: 54,
+                name: "Arashiyama Bamboo Grove",
+                country: "Japan",
+                city: "Kyoto",
+                category: "nature",
+                image: "images/arashiyama.jpeg",
+                description: "Magical bamboo forest path that creates a serene and otherworldly atmosphere.",
+                bestTime: "March to May, October to November",
+                highlights: ["Bamboo forest", "Peaceful atmosphere", "Japanese culture"],
+                coordinates: { lat: 35.0094, lng: 135.6772 },
+                wikipedia: "https://en.wikipedia.org/wiki/Arashiyama"
+            }
+        ];
+
+        let currentFilter = 'all';
+        let filteredDestinations = [...destinations];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get mobile menu elements
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const closeMenuBtn = document.getElementById('closeMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const menuOverlay = document.getElementById('menuOverlay');
+
+            // Set up mobile menu
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', openMobileMenu);
+            }
+            if (closeMenuBtn) {
+                closeMenuBtn.addEventListener('click', closeMobileMenu);
+            }
+            if (menuOverlay) {
+                menuOverlay.addEventListener('click', closeMobileMenu);
+            }
+
+            // Set up filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remove active class from all buttons
+                    document.querySelectorAll('.filter-btn').forEach(b => {
+                        b.classList.remove('active', 'bg-white/20', 'text-white');
+                        b.classList.add('bg-white/10', 'text-white/80');
+                    });
+                    
+                    // Add active class to clicked button
+                    btn.classList.add('active', 'bg-white/20', 'text-white');
+                    btn.classList.remove('bg-white/10', 'text-white/80');
+                    
+                    currentFilter = btn.dataset.filter;
+                    filterDestinations();
+                });
+            });
+
+            // Set up search functionality
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', filterDestinations);
+            }
+
+            // Initial render
+            renderDestinations();
+        });
+
+        function openMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const menuOverlay = document.getElementById('menuOverlay');
+            if (mobileMenu && menuOverlay) {
+                mobileMenu.classList.remove('translate-x-full');
+                mobileMenu.classList.add('translate-x-0');
+                menuOverlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const menuOverlay = document.getElementById('menuOverlay');
+            if (mobileMenu && menuOverlay) {
+                mobileMenu.classList.remove('translate-x-0');
+                mobileMenu.classList.add('translate-x-full');
+                menuOverlay.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function filterDestinations() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            filteredDestinations = destinations.filter(dest => {
+                const matchesFilter = currentFilter === 'all' || dest.category === currentFilter;
+                const matchesSearch = dest.name.toLowerCase().includes(searchTerm) ||
+                                    dest.country.toLowerCase().includes(searchTerm) ||
+                                    dest.city.toLowerCase().includes(searchTerm) ||
+                                    dest.description.toLowerCase().includes(searchTerm);
+                
+                return matchesFilter && matchesSearch;
+            });
+            
+            renderDestinations();
+        }
+
+        function renderDestinations() {
+            const grid = document.getElementById('destinationsGrid');
+            grid.innerHTML = '';
+            
+            filteredDestinations.forEach((dest, index) => {
+                const card = createDestinationCard(dest, index);
+                grid.appendChild(card);
+            });
+        }
+
+        function createDestinationCard(dest, index) {
+            const card = document.createElement('div');
+            card.className = `destination-card rounded-2xl overflow-hidden shadow-lg fade-in`;
+            card.style.animationDelay = `${index * 0.1}s`;
+            
+            card.innerHTML = `
+                <div class="relative h-64 overflow-hidden">
+                    <img src="${dest.image}" alt="${dest.name}" class="w-full h-full object-cover card-image">
+                    <div class="absolute inset-0 image-overlay"></div>
+                    <div class="absolute bottom-4 left-4 right-4">
+                        <h3 class="text-white text-xl font-bold mb-1">${dest.name}</h3>
+                        <p class="text-white/90 text-sm">
+                            <i class="fas fa-map-marker-alt mr-1"></i>${dest.city}, ${dest.country}
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    <p class="text-gray-600 mb-4 line-clamp-3">${dest.description}</p>
+                    
+                    <div class="mb-4">
+                        <span class="text-sm text-gray-500">
+                            <i class="fas fa-calendar mr-1"></i>Best: ${dest.bestTime}
+                        </span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4 class="text-sm font-semibold text-gray-700 mb-2">Highlights:</h4>
+                        <div class="flex flex-wrap gap-2">
+                            ${dest.highlights.map(highlight => 
+                                `<span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">${highlight}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                        <a href="${dest.wikipedia}" target="_blank" class="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-300 hover:scale-105 text-center">
+                            <i class="fas fa-external-link-alt mr-2"></i>Learn More
+                        </a>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Close menu on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeMobileMenu();
+            }
+        });
+    </script>
+</body>
+</html> 

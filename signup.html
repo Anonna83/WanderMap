@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up - Travel App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: url('images/highway.jpg') no-repeat center center fixed;
+      background-size: cover;
+    }
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.6);
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen text-white">
+  <div class="overlay absolute inset-0 z-0"></div>
+  <div class="bg-gray-900 bg-opacity-90 p-8 rounded-lg shadow-lg w-full max-w-md z-10 relative">
+    <h2 class="text-2xl font-bold mb-6 text-center">Create an Account</h2>
+    <form id="signupForm" class="space-y-4">
+      <div>
+        <label class="block mb-1">Username</label>
+        <input type="text" name="username" id="username" required class="w-full px-4 py-2 rounded bg-gray-800 border border-gray-600 focus:outline-none" />
+      </div>
+      <div>
+        <label class="block mb-1">Email Address</label>
+        <input type="email" name="email" id="email" required class="w-full px-4 py-2 rounded bg-gray-800 border border-gray-600 focus:outline-none" />
+      </div>
+      <div>
+        <label class="block mb-1">Password</label>
+        <input type="password" name="password" id="password" required class="w-full px-4 py-2 rounded bg-gray-800 border border-gray-600 focus:outline-none" />
+      </div>
+      <div>
+        <label class="block mb-1">Confirm Password</label>
+        <input type="password" name="confirm_password" id="confirm_password" required class="w-full px-4 py-2 rounded bg-gray-800 border border-gray-600 focus:outline-none" />
+      </div>
+      <div id="message" class="hidden text-center p-2 rounded"></div>
+      <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 py-2 rounded font-semibold">Sign Up</button>
+      <p class="text-sm text-center mt-4">Already have an account? <a href="login.html" class="text-sky-400 hover:underline">Login</a></p>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('signupForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm_password').value;
+      const messageDiv = document.getElementById('message');
+      
+      // Clear previous messages
+      messageDiv.className = 'hidden text-center p-2 rounded';
+      
+      // Validate passwords match
+      if (password !== confirmPassword) {
+        messageDiv.textContent = 'Passwords do not match!';
+        messageDiv.className = 'block text-center p-2 rounded bg-red-600 text-white';
+        return;
+      }
+      
+      // Validate password length
+      if (password.length < 4) {
+        messageDiv.textContent = 'Password must be at least 4 characters long!';
+        messageDiv.className = 'block text-center p-2 rounded bg-red-600 text-white';
+        return;
+      }
+      
+             try {
+         console.log('Attempting to connect to API...');
+         const response = await fetch('/api/member/register', {
+           method: 'POST',
+           headers: {
+             'Content-Type': 'application/json',
+           },
+           body: JSON.stringify({
+             username: username,
+             email: email,
+             password: password
+           })
+         });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          messageDiv.textContent = 'Registration successful! Redirecting to login...';
+          messageDiv.className = 'block text-center p-2 rounded bg-green-600 text-white';
+          
+          // Redirect to login page after 2 seconds
+          setTimeout(() => {
+            window.location.href = 'login.html';
+          }, 2000);
+        } else {
+          messageDiv.textContent = data.error || 'Registration failed!';
+          messageDiv.className = 'block text-center p-2 rounded bg-red-600 text-white';
+        }
+             } catch (error) {
+         console.error('Network error details:', error);
+         messageDiv.textContent = 'Network error: ' + error.message;
+         messageDiv.className = 'block text-center p-2 rounded bg-red-600 text-white';
+       }
+    });
+  </script>
+</body>
+</html>

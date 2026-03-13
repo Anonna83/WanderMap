@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Travel App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: url('images/highway.jpg') no-repeat center center fixed;
+      background-size: cover;
+    }
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.6);
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen text-white">
+  <div class="overlay absolute inset-0 z-0"></div>
+  <div class="bg-gray-900 bg-opacity-90 p-8 rounded-lg shadow-lg w-full max-w-md z-10 relative">
+    <h2 class="text-2xl font-bold mb-6 text-center">Welcome Back</h2>
+    
+    <!-- Login Type Selection -->
+    <div class="mb-6">
+      <div class="flex space-x-4 mb-4">
+        <button id="memberBtn" class="flex-1 py-2 px-4 rounded bg-sky-600 text-white font-semibold">Member Login</button>
+        <button id="adminBtn" class="flex-1 py-2 px-4 rounded bg-gray-600 text-white font-semibold">Admin Login</button>
+      </div>
+    </div>
+    
+    <!-- Member Login Form -->
+    <form id="memberLoginForm" class="space-y-4">
+      <div>
+        <label class="block mb-1">Email Address</label>
+        <input type="email" name="email" id="memberEmail" required class="w-full px-4 py-2 rounded bg-gray-800 border border-gray-600 focus:outline-none" />
+      </div>
+      <div>
+        <label class="block mb-1">Password</label>
+        <input type="password" name="password" id="memberPassword" required class="w-full px-4 py-2 rounded bg-gray-800 border border-gray-600 focus:outline-none" />
+      </div>
+      <div class="flex items-center justify-between">
+        <label class="flex items-center text-sm">
+          <input type="checkbox" class="mr-2" /> Remember me
+        </label>
+        <button type="button" id="memberForgotBtn" class="text-sm text-sky-400 hover:underline">Forgot Password?</button>
+      </div>
+      <div id="memberMessage" class="hidden text-center p-2 rounded"></div>
+      <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 py-2 rounded font-semibold">Login as Member</button>
+      <p class="text-sm text-center mt-4">Don't have an account? <a href="signup.html" class="text-sky-400 hover:underline">Sign Up</a></p>
+    </form>
+    
+    <!-- Admin Login Form -->
+    <form id="adminLoginForm" class="space-y-4 hidden">
+      <div>
+        <label class="block mb-1">Email Address</label>
+        <input type="email" name="email" id="adminEmail" required class="w-full px-4 py-2 rounded bg-gray-800 border border-gray-600 focus:outline-none" />
+      </div>
+      <div>
+        <label class="block mb-1">Password</label>
+        <input type="password" name="password" id="adminPassword" required class="w-full px-4 py-2 rounded bg-gray-800 border border-gray-600 focus:outline-none" />
+      </div>
+      <div class="flex items-center justify-between">
+        <label class="flex items-center text-sm">
+          <input type="checkbox" class="mr-2" /> Remember me
+        </label>
+        <button type="button" id="adminForgotBtn" class="text-sm text-sky-400 hover:underline">Forgot Password?</button>
+      </div>
+      <div id="adminMessage" class="hidden text-center p-2 rounded"></div>
+      <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 py-2 rounded font-semibold">Login as Admin</button>
+    </form>
+    
+    <!-- Forgot Password Form -->
+    <form id="forgotPasswordForm" class="space-y-4 hidden">
+      <div>
+        <label class="block mb-1">Email Address</label>
+        <input type="email" name="email" id="forgotEmail" required class="w-full px-4 py-2 rounded bg-gray-800 border border-gray-600 focus:outline-none" />
+      </div>
+      <div>
+        <label class="block mb-1">User Type</label>
+        <select id="userType" class="w-full px-4 py-2 rounded bg-gray-800 border border-gray-600 focus:outline-none">
+          <option value="member">Member</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div id="forgotMessage" class="hidden text-center p-2 rounded"></div>
+      <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 py-2 rounded font-semibold">Send Reset Link</button>
+      <button type="button" id="backToLoginBtn" class="w-full bg-gray-600 hover:bg-gray-700 py-2 rounded font-semibold">Back to Login</button>
+    </form>
+  </div>
+
+  <script>
+    let currentUserType = 'member';
+    
+    // Toggle between member and admin login
+    document.getElementById('memberBtn').addEventListener('click', function() {
+      currentUserType = 'member';
+      document.getElementById('memberBtn').className = 'flex-1 py-2 px-4 rounded bg-sky-600 text-white font-semibold';
+      document.getElementById('adminBtn').className = 'flex-1 py-2 px-4 rounded bg-gray-600 text-white font-semibold';
+      document.getElementById('memberLoginForm').classList.remove('hidden');
+      document.getElementById('adminLoginForm').classList.add('hidden');
+      document.getElementById('forgotPasswordForm').classList.add('hidden');
+    });
+    
+    document.getElementById('adminBtn').addEventListener('click', function() {
+      currentUserType = 'admin';
+      document.getElementById('adminBtn').className = 'flex-1 py-2 px-4 rounded bg-sky-600 text-white font-semibold';
+      document.getElementById('memberBtn').className = 'flex-1 py-2 px-4 rounded bg-gray-600 text-white font-semibold';
+      document.getElementById('adminLoginForm').classList.remove('hidden');
+      document.getElementById('memberLoginForm').classList.add('hidden');
+      document.getElementById('forgotPasswordForm').classList.add('hidden');
+    });
+    
+    // Forgot password functionality
+    document.getElementById('memberForgotBtn').addEventListener('click', function() {
+      document.getElementById('memberLoginForm').classList.add('hidden');
+      document.getElementById('adminLoginForm').classList.add('hidden');
+      document.getElementById('forgotPasswordForm').classList.remove('hidden');
+      document.getElementById('userType').value = 'member';
+    });
+    
+    document.getElementById('adminForgotBtn').addEventListener('click', function() {
+      document.getElementById('memberLoginForm').classList.add('hidden');
+      document.getElementById('adminLoginForm').classList.add('hidden');
+      document.getElementById('forgotPasswordForm').classList.remove('hidden');
+      document.getElementById('userType').value = 'admin';
+    });
+    
+    document.getElementById('backToLoginBtn').addEventListener('click', function() {
+      document.getElementById('forgotPasswordForm').classList.add('hidden');
+      if (currentUserType === 'member') {
+        document.getElementById('memberLoginForm').classList.remove('hidden');
+      } else {
+        document.getElementById('adminLoginForm').classList.remove('hidden');
+      }
+    });
+    
+    // Member login form submission
+    document.getElementById('memberLoginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('memberEmail').value;
+      const password = document.getElementById('memberPassword').value;
+      const messageDiv = document.getElementById('memberMessage');
+      
+      messageDiv.className = 'hidden text-center p-2 rounded';
+      
+      try {
+        const response = await fetch('/api/member/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          messageDiv.textContent = 'Login successful! Redirecting...';
+          messageDiv.className = 'block text-center p-2 rounded bg-green-600 text-white';
+          
+          // Store member data in localStorage
+          localStorage.setItem('memberData', JSON.stringify(data.member));
+          localStorage.setItem('userType', 'member');
+          
+          // Redirect to home page after 2 seconds
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 2000);
+        } else {
+          messageDiv.textContent = data.error || 'Login failed!';
+          messageDiv.className = 'block text-center p-2 rounded bg-red-600 text-white';
+        }
+      } catch (error) {
+        messageDiv.textContent = 'Network error! Please try again.';
+        messageDiv.className = 'block text-center p-2 rounded bg-red-600 text-white';
+      }
+    });
+    
+    // Admin login form submission
+    document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('adminEmail').value;
+      const password = document.getElementById('adminPassword').value;
+      const messageDiv = document.getElementById('adminMessage');
+      
+      messageDiv.className = 'hidden text-center p-2 rounded';
+      
+      try {
+        const response = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          messageDiv.textContent = 'Admin login successful! Redirecting...';
+          messageDiv.className = 'block text-center p-2 rounded bg-green-600 text-white';
+          
+          // Store admin data in localStorage
+          localStorage.setItem('adminData', JSON.stringify(data.admin));
+          localStorage.setItem('userType', 'admin');
+          
+          // Redirect to admin dashboard or home page
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 2000);
+        } else {
+          messageDiv.textContent = data.error || 'Login failed!';
+          messageDiv.className = 'block text-center p-2 rounded bg-red-600 text-white';
+        }
+      } catch (error) {
+        messageDiv.textContent = 'Network error! Please try again.';
+        messageDiv.className = 'block text-center p-2 rounded bg-red-600 text-white';
+      }
+    });
+    
+    // Forgot password form submission
+    document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('forgotEmail').value;
+      const userType = document.getElementById('userType').value;
+      const messageDiv = document.getElementById('forgotMessage');
+      
+      messageDiv.className = 'hidden text-center p-2 rounded';
+      
+      try {
+        const response = await fetch('/api/forgot-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            userType: userType
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          messageDiv.textContent = 'Password reset token sent! Check your email. (For demo: ' + data.resetToken + ')';
+          messageDiv.className = 'block text-center p-2 rounded bg-green-600 text-white';
+        } else {
+          messageDiv.textContent = data.error || 'Failed to send reset token!';
+          messageDiv.className = 'block text-center p-2 rounded bg-red-600 text-white';
+        }
+      } catch (error) {
+        messageDiv.textContent = 'Network error! Please try again.';
+        messageDiv.className = 'block text-center p-2 rounded bg-red-600 text-white';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Services - Travel Guide</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap');
+    .explore-font { font-family: cursive; }
+    body { font-family: cursive; }
+    * { font-family: cursive; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+      50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.8); }
+    }
+    
+    @keyframes slideInFromLeft {
+      0% { transform: translateX(-100%); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes slideInFromRight {
+      0% { transform: translateX(100%); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes fadeInUp {
+      0% { transform: translateY(30px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    
+    .float-animation {
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .pulse-glow {
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+    
+    .slide-in-left {
+      animation: slideInFromLeft 0.8s ease-out;
+    }
+    
+    .slide-in-right {
+      animation: slideInFromRight 0.8s ease-out;
+    }
+    
+    .fade-in-up {
+      animation: fadeInUp 0.8s ease-out;
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .hover-scale {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .hover-scale:hover {
+      transform: scale(1.05);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .hover-animated-glow {
+      transition: box-shadow 0.3s, border 0.3s;
+      border: 2px solid transparent;
+    }
+    .hover-animated-glow:hover {
+      box-shadow: 0 0 32px 8px rgba(59,130,246,0.4), 0 8px 32px rgba(0,0,0,0.3);
+      border-image: linear-gradient(90deg, #facc15, #6366f1, #ec4899) 1;
+      border-width: 2px;
+    }
+    .hover-overlay {
+      pointer-events: none;
+    }
+    .card-img-zoom {
+      transition: transform 0.4s cubic-bezier(.4,2,.6,1), filter 0.4s;
+    }
+    .group:hover .card-img-zoom {
+      transform: scale(1.12);
+      filter: none !important;
+    }
+    .card-info-bar {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      background: linear-gradient(90deg, rgba(30,41,59,0.92) 60%, rgba(59,130,246,0.5) 100%);
+      color: #fff;
+      padding: 0.7rem 1.2rem 0.7rem 1.2rem;
+      border-radius: 0 0 1rem 1rem;
+      opacity: 0;
+      transform: translateY(100%);
+      transition: opacity 0.35s, transform 0.35s;
+      z-index: 2;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-size: 0.98rem;
+    }
+    .group:hover .card-info-bar {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .card-info-bar .fa-map-marker-alt {
+      color: #facc15;
+      margin-right: 0.3rem;
+      font-size: 1.1rem;
+      vertical-align: middle;
+    }
+    #foodCountryDropdown {
+      box-shadow: 0 8px 32px rgba(59,130,246,0.12), 0 1.5px 6px rgba(0,0,0,0.08);
+      font-family: inherit;
+      font-size: 1rem;
+      min-width: 100px;
+      background: #fff;
+      color: #222;
+      border: 1px solid #dbeafe;
+      margin-top: 0.25rem;
+    }
+    #foodCountryDropdown div {
+      transition: background 0.2s, color 0.2s;
+    }
+    #foodCountryDropdown::-webkit-scrollbar {
+      width: 8px;
+      background: #e0e7ef;
+    }
+    #foodCountryDropdown::-webkit-scrollbar-thumb {
+      background: #a5b4fc;
+      border-radius: 8px;
+    }
+    /* Update food card hover effect: soft colored glow, card lift, animated underline under title */
+    .food-card-hover {
+      transition: box-shadow 0.3s, transform 0.3s;
+      box-shadow: 0 2px 8px rgba(30,41,59,0.08);
+      position: relative;
+    }
+    .food-card-hover:hover {
+      box-shadow: 0 8px 32px 0 rgba(59,130,246,0.18), 0 1.5px 6px rgba(250,204,21,0.18);
+      transform: translateY(-8px) scale(1.03);
+      z-index: 2;
+    }
+    .food-title-underline {
+      position: relative;
+      display: inline-block;
+    }
+    .food-title-underline::after {
+      content: '';
+      display: block;
+      position: absolute;
+      left: 0; right: 0; bottom: -4px;
+      height: 3px;
+      background: linear-gradient(90deg, #60a5fa 0%, #facc15 100%);
+      border-radius: 2px;
+      opacity: 0;
+      transform: scaleX(0.5);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .food-card-hover:hover .food-title-underline::after {
+      opacity: 1;
+      transform: scaleX(1);
+    }
+    /* New food card hover style: 3D tilt, gradient overlay, image scale+shadow, animated title, sparkle icon */
+    .food-card-hover {
+      transition: box-shadow 0.35s, transform 0.35s, background 0.35s;
+      box-shadow: 0 2px 8px rgba(30,41,59,0.08);
+      position: relative;
+      background: rgba(255,255,255,0.04);
+      overflow: visible;
+    }
+    .food-card-hover:hover {
+      box-shadow: 0 12px 36px 0 rgba(59,130,246,0.22), 0 2px 12px rgba(250,204,21,0.18);
+      transform: translateY(-10px) rotateY(6deg) scale(1.035);
+      background: linear-gradient(120deg, rgba(59,130,246,0.10) 0%, rgba(250,204,21,0.10) 100%);
+      z-index: 2;
+    }
+    .food-card-hover .food-img {
+      transition: transform 0.35s, box-shadow 0.35s;
+      box-shadow: 0 2px 8px rgba(30,41,59,0.08);
+    }
+    .food-card-hover:hover .food-img {
+      transform: scale(1.07) rotateZ(-2deg);
+      box-shadow: 0 8px 32px 0 rgba(59,130,246,0.18), 0 1.5px 6px rgba(250,204,21,0.18);
+    }
+    .food-card-hover .food-title-underline {
+      transition: color 0.35s;
+    }
+    .food-card-hover:hover .food-title-underline {
+      color: #facc15;
+    }
+    .food-card-hover .food-sparkle {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      font-size: 1.5rem;
+      color: #facc15;
+      opacity: 0;
+      transform: scale(0.7) rotate(-10deg);
+      transition: opacity 0.35s, transform 0.35s;
+      pointer-events: none;
+      filter: drop-shadow(0 0 6px #facc15cc);
+    }
+    .food-card-hover:hover .food-sparkle {
+      opacity: 1;
+      transform: scale(1.1) rotate(0deg);
+    }
+    .food-img, .food-card-hover, .food-card-hover:hover, .food-card-hover .food-img, .food-card-hover:hover .food-img {
+      filter: none !important;
+    }
+    /* New food card hover: animated gradient border, soft shadow, gentle lift, background fade. No sparkle, no tilt, no blur. */
+    .food-card-hover {
+      transition: box-shadow 0.3s, transform 0.3s, border 0.3s, background 0.3s;
+      border: 2px solid transparent;
+      box-shadow: 0 2px 8px rgba(30,41,59,0.08);
+      background: rgba(255,255,255,0.04);
+      position: relative;
+      overflow: visible;
+    }
+    .food-card-hover:hover {
+      border-image: linear-gradient(90deg, #60a5fa 0%, #facc15 100%) 1;
+      box-shadow: 0 8px 32px 0 rgba(59,130,246,0.18), 0 1.5px 6px rgba(250,204,21,0.18);
+      transform: translateY(-8px) scale(1.025);
+      background: linear-gradient(120deg, rgba(59,130,246,0.07) 0%, rgba(250,204,21,0.07) 100%);
+      z-index: 2;
+    }
+    .food-card-hover .food-img {
+      transition: box-shadow 0.3s, transform 0.3s;
+      box-shadow: 0 2px 8px rgba(30,41,59,0.08);
+      filter: none !important;
+    }
+    .food-card-hover:hover .food-img {
+      box-shadow: 0 8px 32px 0 rgba(59,130,246,0.10), 0 1.5px 6px rgba(250,204,21,0.10);
+      filter: none !important;
+    }
+    .food-card-hover .food-title-underline {
+      transition: color 0.3s;
+    }
+    .food-card-hover:hover .food-title-underline {
+      color: #facc15;
+    }
+    /* Classic food card hover: simple lift, stronger shadow, solid blue border. No gradient, no background fade, no extra effects. */
+    .food-card-hover {
+      transition: box-shadow 0.25s, transform 0.25s, border 0.25s;
+      border: 2px solid transparent;
+      box-shadow: 0 2px 8px rgba(30,41,59,0.08);
+      background: #18181b;
+      position: relative;
+      overflow: visible;
+    }
+    .food-card-hover:hover {
+      border-color: #2563eb;
+      box-shadow: 0 8px 32px 0 rgba(37,99,235,0.18), 0 1.5px 6px rgba(30,41,59,0.10);
+      transform: translateY(-8px);
+      z-index: 2;
+    }
+    .food-card-hover .food-img {
+      transition: box-shadow 0.25s, transform 0.25s;
+      box-shadow: 0 2px 8px rgba(30,41,59,0.08);
+      filter: none !important;
+    }
+    .food-card-hover:hover .food-img {
+      box-shadow: 0 8px 32px 0 rgba(37,99,235,0.10), 0 1.5px 6px rgba(30,41,59,0.10);
+      filter: none !important;
+    }
+    .food-card-hover .food-title-underline {
+      transition: color 0.25s;
+    }
+    .food-card-hover:hover .food-title-underline {
+      color: #2563eb;
+    }
+    /* Custom hover style for place dropdown */
+    #placeNameDropdown div {
+      transition: background 0.2s, color 0.2s, transform 0.15s;
+    }
+    #placeNameDropdown div:hover, #placeNameDropdown div.bg-blue-200 {
+      background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
+      color: #fff !important;
+      transform: scale(1.04);
+    }
+  </style>
+</head>
+<body class="bg-black text-white font-[cursive] overflow-x-hidden">
+
+  <!-- Navigation Bar -->
+  <nav class="fixed top-0 left-0 right-0 z-50 glass-effect border-b border-white/20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo -->
+        <div class="flex items-center space-x-3">
+          <i class="fas fa-globe text-2xl text-white"></i>
+          <span class="text-2xl font-bold text-white explore-font">WanderMap</span>
+        </div>
+        <!-- Desktop Menu -->
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="index.html" class="text-white/80 hover:text-white transition-colors duration-300">
+            <i class="fas fa-home mr-2"></i>Home
+          </a>
+          <a href="explore.html" class="text-white/80 hover:text-white transition-colors duration-300">
+            <i class="fas fa-map-marked-alt mr-2"></i>Explore
+          </a>
+          <a href="journal.html" class="text-white/80 hover:text-white transition-colors duration-300">
+            <i class="fas fa-book-open mr-2"></i>Journal
+          </a>
+          <a href="services.html" class="text-white font-semibold">
+            <i class="fas fa-concierge-bell mr-2"></i>Services
+          </a>
+          <a href="review.html" class="text-white/80 hover:text-white transition-colors duration-300">
+            <i class="fas fa-star mr-2"></i>Review
+          </a>
+        </div>
+        <!-- Mobile Menu Button -->
+        <div class="md:hidden">
+          <button id="mobileMenuBtn" class="text-white hover:text-blue-400 focus:outline-none transition-colors duration-300">
+            <i class="fas fa-bars text-xl"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Side Menu -->
+  <div id="mobileMenu" class="fixed top-0 right-0 h-full w-80 bg-gray-900 transform translate-x-full transition-transform duration-300 ease-in-out z-50 md:hidden">
+    <div class="flex items-center justify-between p-6 border-b border-gray-700">
+      <span class="text-xl font-bold text-white">Menu</span>
+      <button id="closeMenuBtn" class="text-gray-300 hover:text-white transition-colors duration-300">
+        <i class="fas fa-times text-xl"></i>
+      </button>
+    </div>
+    <div class="p-6">
+      <div class="space-y-6">
+        <a href="index.html" class="flex items-center text-gray-300 hover:text-blue-400 py-3 px-4 rounded-lg hover:bg-gray-800 transition-all duration-300">
+          <i class="fas fa-home mr-4 text-lg"></i>
+          <span>Home</span>
+          <i class="fas fa-chevron-right ml-auto text-sm opacity-50"></i>
+        </a>
+        <a href="explore.html" class="flex items-center text-gray-300 hover:text-blue-400 py-3 px-4 rounded-lg hover:bg-gray-800 transition-all duration-300">
+          <i class="fas fa-map-marked-alt mr-4 text-lg"></i>
+          <span>Explore</span>
+          <i class="fas fa-chevron-right ml-auto text-sm opacity-50"></i>
+        </a>
+        <a href="journal.html" class="flex items-center text-gray-300 hover:text-blue-400 py-3 px-4 rounded-lg hover:bg-gray-800 transition-all duration-300">
+          <i class="fas fa-book-open mr-4 text-lg"></i>
+          <span>Journal</span>
+          <i class="fas fa-chevron-right ml-auto text-sm opacity-50"></i>
+        </a>
+        <a href="services.html" class="flex items-center text-blue-400 font-semibold py-3 px-4 rounded-lg bg-blue-900 bg-opacity-20 hover:bg-opacity-30 transition-all duration-300">
+          <i class="fas fa-concierge-bell mr-4 text-lg"></i>
+          <span>Services</span>
+          <i class="fas fa-chevron-right ml-auto text-sm opacity-50"></i>
+        </a>
+        <a href="review.html" class="flex items-center text-gray-300 hover:text-blue-400 py-3 px-4 rounded-lg hover:bg-gray-800 transition-all duration-300">
+          <i class="fas fa-star mr-4 text-lg"></i>
+          <span>Review</span>
+          <i class="fas fa-chevron-right ml-auto text-sm opacity-50"></i>
+        </a>
+      </div>
+      <!-- Social Links -->
+      <div class="mt-8 pt-6 border-t border-gray-700">
+        <h4 class="text-sm font-semibold text-gray-400 mb-4">Follow Us</h4>
+        <div class="flex space-x-4">
+          <a href="#" class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700 transition-colors duration-300">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="#" class="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white hover:bg-pink-700 transition-colors duration-300">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="#" class="w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center text-white hover:bg-blue-500 transition-colors duration-300">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="#" class="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center text-white hover:bg-red-700 transition-colors duration-300">
+            <i class="fab fa-youtube"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Menu Overlay -->
+  <div id="menuOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden"></div>
+
+  <!-- Hero Section -->
+  <header class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+    <!-- Animated Background -->
+    <div class="absolute inset-0 gradient-bg opacity-20"></div>
+    <div class="absolute inset-0 bg-black"></div>
+    
+    <!-- Floating Elements -->
+    <div class="absolute top-20 left-10 float-animation">
+      <i class="fas fa-plane text-4xl text-blue-400 opacity-30"></i>
+    </div>
+    <div class="absolute top-40 right-20 float-animation" style="animation-delay: 1s;">
+      <i class="fas fa-map-marker-alt text-3xl text-yellow-400 opacity-30"></i>
+    </div>
+    <div class="absolute bottom-40 left-20 float-animation" style="animation-delay: 2s;">
+      <i class="fas fa-hotel text-3xl text-green-400 opacity-30"></i>
+  </div>
+
+    <div class="relative z-10 text-center slide-in-left max-w-4xl mx-auto px-6">
+      <h1 class="text-6xl md:text-8xl font-bold text-blue-400 mb-6">
+        Our Services
+      </h1>
+      <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
+        Discover unique travel experiences with our comprehensive suite of services designed to make your journey unforgettable
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <button id="exploreServicesBtn" class="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-full text-lg font-semibold transition-all duration-300 hover:scale-105">
+          Explore Services
+        </button>
+        <button id="contactUsBtn" class="border-2 border-blue-400 hover:bg-blue-400 hover:text-black px-8 py-3 rounded-full text-lg font-semibold transition-all duration-300">
+          Contact Us
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Services Grid -->
+  <section id="services" class="py-20 px-6">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="text-4xl md:text-5xl font-bold text-center text-yellow-300 mb-16 fade-in-up" id="services">
+        Premium Travel Services
+      </h2>
+      <!-- Filter/Search Bar -->
+      <div class="mb-12 slide-in-right">
+        <h2 class="text-3xl font-bold text-white mb-6 text-center">Filter by Category</h2>
+        <div class="flex flex-wrap justify-center gap-4 mb-6">
+          <button class="filter-btn active bg-white/20 text-white px-6 py-3 rounded-full font-semibold" data-filter="all">
+            <i class="fas fa-globe mr-2"></i>All Places
+          </button>
+          <button class="filter-btn bg-white/10 text-white/80 px-6 py-3 rounded-full font-semibold" data-filter="landmarks">
+            <i class="fas fa-landmark mr-2"></i>Landmarks
+          </button>
+          <button class="filter-btn bg-white/10 text-white/80 px-6 py-3 rounded-full font-semibold" data-filter="nature">
+            <i class="fas fa-mountain mr-2"></i>Nature
+          </button>
+          <button class="filter-btn bg-white/10 text-white/80 px-6 py-3 rounded-full font-semibold" data-filter="beaches">
+            <i class="fas fa-umbrella-beach mr-2"></i>Beaches
+          </button>
+          <button class="filter-btn bg-white/10 text-white/80 px-6 py-3 rounded-full font-semibold" data-filter="cities">
+            <i class="fas fa-city mr-2"></i>Cities
+          </button>
+          <button class="filter-btn bg-white/10 text-white/80 px-6 py-3 rounded-full font-semibold" data-filter="culture">
+            <i class="fas fa-theater-masks mr-2"></i>Culture
+          </button>
+        </div>
+        <!-- Dynamic Services Grid -->
+        <div id="servicesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Destination services cards will be populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Local Food Experience -->
+  <section class="py-20 px-6 bg-gray-900" id="local-food-experiences">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="text-4xl md:text-5xl font-bold text-center text-yellow-300 mb-16 slide-in-left">
+        🍽️ Local Food Experiences
+      </h2>
+      <div class="mb-8 flex flex-wrap justify-center gap-4 relative">
+        <div class="relative w-72">
+          <input id="foodCountryInput" placeholder="Type or select a country..." class="px-6 py-3 rounded-full text-black w-full focus:outline-none focus:ring-2 focus:ring-blue-400" autocomplete="off">
+          <div id="foodCountryDropdown" class="absolute left-0 right-0 mt-1 bg-white rounded-xl shadow-lg z-30 hidden max-h-60 overflow-y-auto border border-blue-200"></div>
+        </div>
+        <button id="clearFoodCountry" class="ml-2 px-4 py-3 rounded-full bg-gray-700 text-white font-semibold hover:bg-gray-600">Clear</button>
+      </div>
+      <div id="foodGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- Food cards will be rendered here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action -->
+  <section class="py-20 px-6 gradient-bg" id="cta-adventure">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-4xl md:text-5xl font-bold text-white mb-8 fade-in-up">
+        Ready to Start Your Adventure?
+      </h2>
+      <p class="text-xl text-gray-200 mb-8">
+        Join thousands of satisfied travelers who have discovered the world with us
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <button class="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 hover:scale-105">
+          Start Planning
+        </button>
+    </div>
+  </div>
+</section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-center py-12">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <h3 class="text-xl font-bold text-yellow-300 mb-4">SANATA</h3>
+          <p class="text-gray-400">Your trusted partner for unforgettable travel experiences around the world.</p>
+        </div>
+        <div>
+          <h4 class="text-lg font-semibold text-blue-400 mb-4">Services</h4>
+          <ul class="space-y-2 text-gray-400">
+            <li><a href="#services" class="hover:text-white transition-colors">Premium Travelling</a></li>
+            <li><a href="#services" class="hover:text-white transition-colors">Tour Packages</a></li>
+            <li><a href="#local-food-experiences" class="hover:text-white transition-colors">Local Foods</a></li>
+            <li><a href="#cta-adventure" class="hover:text-white transition-colors">Planning Tours</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-lg font-semibold text-blue-400 mb-4">Support</h4>
+          <ul class="space-y-2 text-gray-400">
+            <li><a href="#" class="hover:text-white transition-colors">24/7 Help</a></li>
+            
+            <li><a href="#" class="hover:text-white transition-colors">Emergency Contact</a></li>
+            
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-lg font-semibold text-blue-400 mb-4">Connect</h4>
+          <div class="flex justify-center space-x-4">
+            <a href="#" class="text-2xl text-gray-400 hover:text-blue-500 transition-colors">
+              <i class="fab fa-facebook"></i>
+            </a>
+            <a href="#" class="text-2xl text-gray-400 hover:text-pink-500 transition-colors">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="#" class="text-2xl text-gray-400 hover:text-sky-400 transition-colors">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="#" class="text-2xl text-gray-400 hover:text-blue-600 transition-colors">
+              <i class="fab fa-linkedin"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-gray-700 pt-8">
+        <p class="text-gray-400">&copy; 2025 Travel Guide. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+<script>
+    // Mobile Menu Functionality
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const closeMenuBtn = document.getElementById('closeMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+
+    function openMobileMenu() {
+      mobileMenu.classList.remove('translate-x-full');
+      mobileMenu.classList.add('translate-x-0');
+      menuOverlay.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileMenu() {
+      mobileMenu.classList.remove('translate-x-0');
+      mobileMenu.classList.add('translate-x-full');
+      menuOverlay.classList.add('hidden');
+      document.body.style.overflow = 'auto';
+    }
+
+    mobileMenuBtn.addEventListener('click', openMobileMenu);
+    closeMenuBtn.addEventListener('click', closeMobileMenu);
+    menuOverlay.addEventListener('click', closeMobileMenu);
+
+    // Close menu on escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeMobileMenu();
+      }
+    });
+
+    // Close menu when clicking on a link
+    document.querySelectorAll('#mobileMenu a').forEach(link => {
+      link.addEventListener('click', closeMobileMenu);
+    });
+
+    // Google Maps integration for Explore Our Network
+    const destinations = [
+      // Will be filled with destination objects from explore.html
+      // Example: { name: 'Eiffel Tower', lat: 48.8584, lng: 2.2945, id: 1 }
+    ];
+    // TODO: Fill destinations array with all destinations from explore.html
+    let map, hotelMarker, hotelInfoWindow;
+    let mapReady = false;
+    function initMap() {
+      map = new google.maps.Map(document.getElementById('googleMap'), {
+        zoom: 2,
+        center: { lat: 20, lng: 0 },
+        styles: [
+          { elementType: 'geometry', stylers: [{ color: '#212121' }] },
+          { elementType: 'labels.text.stroke', stylers: [{ color: '#212121' }] },
+          { elementType: 'labels.text.fill', stylers: [{ color: '#757575' }] },
+          { featureType: 'administrative', elementType: 'geometry', stylers: [{ color: '#757575' }] },
+          { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#bdbdbd' }] },
+          { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#38414e' }] },
+          { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#212a37' }] },
+          { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#9ca5b3' }] },
+          { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#000000' }] },
+          { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#3d3d3d' }] }
+        ]
+      });
+      destinations.forEach(dest => {
+        const marker = new google.maps.Marker({
+          position: { lat: dest.lat, lng: dest.lng },
+          map,
+          title: dest.name
+        });
+        const infoWindow = new google.maps.InfoWindow({
+          content: `<b>${dest.name}</b><br><a href=\"#${dest.id}\">View Services</a>`
+        });
+        marker.addListener('click', () => {
+          infoWindow.open(map, marker);
+        });
+      });
+      hotelMarker = new google.maps.Marker({ map: map, visible: false });
+      hotelInfoWindow = new google.maps.InfoWindow();
+      mapReady = true;
+      // Enable all view-on-map buttons
+      document.querySelectorAll('.view-on-map-btn').forEach(btn => {
+        btn.classList.remove('opacity-50', 'pointer-events-none');
+        btn.title = 'View this hotel on the map';
+      });
+    }
+
+    // Smooth scroll for Explore Services button
+    document.getElementById('exploreServicesBtn').addEventListener('click', function() {
+      document.getElementById('services').scrollIntoView({ behavior: 'smooth' });
+    });
+    // Contact Us button navigates to contact.html
+    document.getElementById('contactUsBtn').addEventListener('click', function() {
+      window.location.href = 'contact.html';
+    });
+
+    // Filtering and search logic for services grid
+    // Realistic data for all destinations
+    const servicesDestinations = [
+      {
+        id: 1,
+        name: "Eiffel Tower",
+        country: "France",
+        city: "Paris",
+        category: "landmarks",
+        image: "images/eiffelTower.avif",
+        description: "The iconic symbol of Paris, standing 324 meters tall. This iron lattice tower offers breathtaking views of the City of Light.",
+        highlights: ["City views", "Romantic atmosphere", "Historical significance"],
+        hotels: [
+          {
+            name: "Hotel du Champ de Mars",
+            description: "Charming boutique hotel just steps from the Eiffel Tower.",
+            map: "https://www.google.com/maps/place/Hôtel+du+Champ+de+Mars/@48.8575,2.3041,17z/data=!3m1!4b1!4m9!3m8!1s0x47e66fddc2e2c6e1:0x6e2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d48.8575!4d2.3041!16s%2Fg%2F11b7w7w7w7",
+            lat: 48.8575,
+            lng: 2.3041
+          },
+          {
+            name: "Pullman Paris Tour Eiffel",
+            description: "Modern 4-star hotel with Eiffel Tower views and fine dining.",
+            map: "https://www.google.com/maps/place/Pullman+Paris+Tour+Eiffel/@48.8553,2.2932,17z/data=!3m1!4b1!4m9!3m8!1s0x47e66fddc2e2c6e1:0x7e2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d48.8553!4d2.2932!16s%2Fg%2F11b7w7w7w8",
+            lat: 48.8553,
+            lng: 2.2932
+          },
+          {
+            name: "Shangri-La Hotel Paris",
+            description: "Luxury palace hotel with opulent rooms and Michelin-starred dining.",
+            map: "https://www.google.com/maps/place/Shangri-La+Hotel,+Paris/@48.8645,2.2936,17z/data=!3m1!4b1!4m9!3m8!1s0x47e66fddc2e2c6e1:0x8e2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d48.8645!4d2.2936!16s%2Fg%2F11b7w7w7w9",
+            lat: 48.8645,
+            lng: 2.2936
+          }
+        ],
+        tours: [
+          {
+            title: "Paris City Highlights Tour",
+            highlights: ["Eiffel Tower skip-the-line", "Louvre Museum", "Seine River cruise"],
+            cost: { base: 120, includes: ["Guide", "Tickets", "Transport"] }
+          },
+          {
+            title: "Romantic Paris Evening",
+            highlights: ["Dinner near Eiffel Tower", "Night river cruise", "Illuminations tour"],
+            cost: { base: 180, includes: ["Dinner", "Cruise", "Guide"] }
+          }
+        ]
+      },
+      {
+        id: 2,
+        name: "Mount Fuji",
+        country: "Japan",
+        city: "Honshu",
+        category: "nature",
+        image: "images/mountFuji.avif",
+        description: "Japan's highest peak at 3,776 meters. This sacred mountain is a UNESCO World Heritage site and a symbol of Japan.",
+        highlights: ["Hiking", "Sunrise views", "Cultural significance"],
+        hotels: [
+          {
+            name: "Fuji View Hotel",
+            description: "Resort hotel with stunning views of Mount Fuji and Japanese gardens.",
+            map: "https://www.google.com/maps/place/Fuji+View+Hotel/@35.5112,138.7652,17z/data=!3m1!4b1!4m9!3m8!1s0x60195c1e2e2e2e2e:0x9e2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d35.5112!4d138.7652!16s%2Fg%2F11b7w7w7w10",
+            lat: 35.5112,
+            lng: 138.7652
+          },
+          {
+            name: "Kozantei Ubuya",
+            description: "Traditional ryokan with onsen baths and lake views.",
+            map: "https://www.google.com/maps/place/Kozantei+Ubuya/@35.5171,138.7592,17z/data=!3m1!4b1!4m9!3m8!1s0x60195c1e2e2e2e2e:0xae2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d35.5171!4d138.7592!16s%2Fg%2F11b7w7w7w11",
+            lat: 35.5171,
+            lng: 138.7592
+          }
+        ],
+        tours: [
+          {
+            title: "Mount Fuji & Hakone Day Tour",
+            highlights: ["Mount Fuji 5th Station", "Lake Ashi cruise", "Owakudani Valley"],
+            cost: { base: 140, includes: ["Guide", "Transport", "Lunch"] }
+          }
+        ]
+      },
+      {
+        id: 3,
+        name: "Taj Mahal",
+        country: "India",
+        city: "Agra",
+        category: "landmarks",
+        image: "images/tajMahal.jpg",
+        description: "A stunning white marble mausoleum built by Emperor Shah Jahan in memory of his beloved wife Mumtaz Mahal.",
+        highlights: ["Architecture", "Sunrise/sunset", "Love story"],
+        hotels: [
+          {
+            name: "The Oberoi Amarvilas",
+            description: "5-star luxury hotel with direct views of the Taj Mahal.",
+            map: "https://www.google.com/maps/place/The+Oberoi+Amarvilas,+Agra/@27.1751,78.0421,17z/data=!3m1!4b1!4m9!3m8!1s0x397471e2e2e2e2e2:0xbe2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d27.1751!4d78.0421!16s%2Fg%2F11b7w7w7w12",
+            lat: 27.1751,
+            lng: 78.0421
+          },
+          {
+            name: "ITC Mughal",
+            description: "Award-winning resort with Mughal-inspired architecture and lush gardens.",
+            map: "https://www.google.com/maps/place/ITC+Mughal,+Agra/@27.1602,78.0371,17z/data=!3m1!4b1!4m9!3m8!1s0x397471e2e2e2e2e2:0xce2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d27.1602!4d78.0371!16s%2Fg%2F11b7w7w7w13",
+            lat: 27.1602,
+            lng: 78.0371
+          }
+        ],
+        tours: [
+          {
+            title: "Taj Mahal Sunrise Tour",
+            highlights: ["Sunrise at Taj Mahal", "Agra Fort", "Local crafts"],
+            cost: { base: 90, includes: ["Guide", "Tickets", "Breakfast"] }
+          },
+          {
+            title: "Golden Triangle Tour",
+            highlights: ["Delhi", "Agra", "Jaipur"],
+            cost: { base: 350, includes: ["Hotels", "Transport", "Guide"] }
+          }
+        ]
+      },
+      {
+        id: 4,
+        name: "Great Barrier Reef",
+        country: "Australia",
+        city: "Queensland",
+        category: "nature",
+        image: "images/greatBarrierReef.jpg",
+        description: "The world's largest coral reef system, stretching over 2,300 kilometers. Home to thousands of marine species.",
+        highlights: ["Snorkeling", "Diving", "Marine life"],
+        hotels: [
+          {
+            name: "Shangri-La The Marina, Cairns",
+            description: "Upscale hotel with marina views, close to reef tour departures.",
+            map: "https://www.google.com/maps/place/Shangri-La+The+Marina,+Cairns/@-16.9203,145.7796,17z/data=!3m1!4b1!4m9!3m8!1s0x697866e2e2e2e2e2:0xde2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d-16.9203!4d145.7796!16s%2Fg%2F11b7w7w7w14",
+            lat: -16.9203,
+            lng: 145.7796
+          },
+          {
+            name: "Pullman Reef Hotel Casino",
+            description: "Luxury hotel in Cairns with rooftop pool and casino.",
+            map: "https://www.google.com/maps/place/Pullman+Reef+Hotel+Casino/@-16.9246,145.7792,17z/data=!3m1!4b1!4m9!3m8!1s0x697866e2e2e2e2e2:0xee2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d-16.9246!4d145.7792!16s%2Fg%2F11b7w7w7w15",
+            lat: -16.9246,
+            lng: 145.7792
+          }
+        ],
+        tours: [
+          {
+            title: "Great Barrier Reef Snorkel Tour",
+            highlights: ["Snorkeling", "Glass-bottom boat", "Marine biologist guide"],
+            cost: { base: 180, includes: ["Equipment", "Lunch", "Guide"] }
+          },
+          {
+            title: "Reef & Rainforest Adventure",
+            highlights: ["Reef cruise", "Daintree Rainforest", "Wildlife spotting"],
+            cost: { base: 250, includes: ["Cruise", "Transport", "Guide"] }
+          }
+        ]
+      },
+      {
+        id: 5,
+        name: "Bondi Beach",
+        country: "Australia",
+        city: "Sydney",
+        category: "beaches",
+        image: "images/bondiBeach.jpg",
+        description: "One of Australia's most famous beaches, known for its golden sands, surf culture, and vibrant atmosphere.",
+        highlights: ["Surfing", "Beach culture", "Coastal walks"],
+        hotels: [
+          {
+            name: "QT Bondi",
+            description: "Trendy hotel just steps from Bondi Beach, with modern amenities.",
+            map: "https://www.google.com/maps/place/QT+Bondi/@-33.8915,151.2767,17z/data=!3m1!4b1!4m9!3m8!1s0x6b12ae2e2e2e2e2e:0xfe2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d-33.8915!4d151.2767!16s%2Fg%2F11b7w7w7w16",
+            lat: -33.8915,
+            lng: 151.2767
+          },
+          {
+            name: "Hotel Bondi",
+            description: "Classic beachside hotel with ocean views and a lively bar.",
+            map: "https://www.google.com/maps/place/Hotel+Bondi/@-33.8916,151.2768,17z/data=!3m1!4b1!4m9!3m8!1s0x6b12ae2e2e2e2e2e:0x1e2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d-33.8916!4d151.2768!16s%2Fg%2F11b7w7w7w17",
+            lat: -33.8916,
+            lng: 151.2768
+          }
+        ],
+        tours: [
+          {
+            title: "Bondi to Coogee Coastal Walk Tour",
+            highlights: ["Guided walk", "Scenic views", "Local history"],
+            cost: { base: 60, includes: ["Guide", "Snacks"] }
+          },
+          {
+            title: "Surfing Lesson at Bondi",
+            highlights: ["Beginner lesson", "Board rental", "Group class"],
+            cost: { base: 70, includes: ["Instructor", "Equipment"] }
+          }
+        ]
+      },
+      {
+        id: 6,
+        name: "Colosseum",
+        country: "Italy",
+        city: "Rome",
+        category: "landmarks",
+        image: "images/Colosseum.jpg",
+        description: "The largest ancient amphitheater ever built, symbol of the Roman Empire's power and engineering prowess.",
+        highlights: ["History", "Architecture", "Gladiator stories"],
+        hotels: [
+          {
+            name: "Hotel Capo d'Africa",
+            description: "Boutique hotel with rooftop terrace near the Colosseum.",
+            map: "https://www.google.com/maps/place/Hotel+Capo+d'Africa/@41.8881,12.4958,17z/data=!3m1!4b1!4m9!3m8!1s0x132f61a2e2e2e2e2:0x2e2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d41.8881!4d12.4958!16s%2Fg%2F11b7w7w7w18",
+            lat: 41.8881,
+            lng: 12.4958
+          },
+          {
+            name: "Palazzo Manfredi",
+            description: "Luxury hotel with direct Colosseum views and Michelin-starred dining.",
+            map: "https://www.google.com/maps/place/Palazzo+Manfredi/@41.8896,12.4957,17z/data=!3m1!4b1!4m9!3m8!1s0x132f61a2e2e2e2e2:0x3e2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d41.8896!4d12.4957!16s%2Fg%2F11b7w7w7w19",
+            lat: 41.8896,
+            lng: 12.4957
+          }
+        ],
+        tours: [
+          {
+            title: "Colosseum & Ancient Rome Tour",
+            highlights: ["Skip-the-line entry", "Roman Forum", "Palatine Hill"],
+            cost: { base: 95, includes: ["Guide", "Tickets"] }
+          },
+          {
+            title: "Gladiator Experience",
+            highlights: ["Colosseum tour", "Gladiator school", "Hands-on activities"],
+            cost: { base: 120, includes: ["Guide", "Costume", "Training"] }
+          }
+        ]
+      },
+      {
+        id: 7,
+        name: "Grand Canyon",
+        country: "USA",
+        city: "Arizona",
+        category: "nature",
+        image: "images/grandCanyon.jpg",
+        description: "A massive gorge carved by the Colorado River over millions of years, revealing Earth's geological history.",
+        highlights: ["Hiking", "Scenic views", "Geology"],
+        hotels: [
+          {
+            name: "El Tovar Hotel",
+            description: "Historic hotel on the South Rim with classic charm and canyon views.",
+            map: "https://www.google.com/maps/place/El+Tovar+Hotel/@36.0570,-112.1407,17z/data=!3m1!4b1!4m9!3m8!1s0x872b0e2e2e2e2e2e:0x4e2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d36.0570!4d-112.1407!16s%2Fg%2F11b7w7w7w20",
+            lat: 36.0570,
+            lng: -112.1407
+          },
+          {
+            name: "Yavapai Lodge",
+            description: "Comfortable lodge inside Grand Canyon National Park.",
+            map: "https://www.google.com/maps/place/Yavapai+Lodge/@36.0655,-112.1192,17z/data=!3m1!4b1!4m9!3m8!1s0x872b0e2e2e2e2e2e:0x5e2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d36.0655!4d-112.1192!16s%2Fg%2F11b7w7w7w21",
+            lat: 36.0655,
+            lng: -112.1192
+          }
+        ],
+        tours: [
+          {
+            title: "Grand Canyon South Rim Tour",
+            highlights: ["Scenic viewpoints", "Visitor center", "Guided walk"],
+            cost: { base: 110, includes: ["Guide", "Transport"] }
+          },
+          {
+            title: "Helicopter Flight Over the Canyon",
+            highlights: ["Aerial views", "Photo ops", "Narrated tour"],
+            cost: { base: 320, includes: ["Flight", "Guide"] }
+          }
+        ]
+      },
+      {
+        id: 8,
+        name: "Sagrada Familia",
+        country: "Spain",
+        city: "Barcelona",
+        category: "landmarks",
+        image: "images/sagradaFamilia.jpg",
+        description: "Antoni Gaudí's masterpiece, a stunning basilica that combines Gothic and Art Nouveau architecture.",
+        highlights: ["Architecture", "Stained glass", "Gaudí's vision"],
+        hotels: [
+          {
+            name: "Ayre Hotel Rosellón",
+            description: "Modern hotel with rooftop terrace and Sagrada Familia views.",
+            map: "https://www.google.com/maps/place/Ayre+Hotel+Rosellón/@41.4036,2.1744,17z/data=!3m1!4b1!4m9!3m8!1s0x12a4a2e2e2e2e2e2:0x6e2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d41.4036!4d2.1744!16s%2Fg%2F11b7w7w7w22",
+            lat: 41.4036,
+            lng: 2.1744
+          },
+          {
+            name: "Hotel Sagrada Familia",
+            description: "Comfortable hotel just a short walk from the basilica.",
+            map: "https://www.google.com/maps/place/Hotel+Sagrada+Familia/@41.4041,2.1746,17z/data=!3m1!4b1!4m9!3m8!1s0x12a4a2e2e2e2e2e2:0x7e2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d41.4041!4d2.1746!16s%2Fg%2F11b7w7w7w23",
+            lat: 41.4041,
+            lng: 2.1746
+          }
+        ],
+        tours: [
+          {
+            title: "Sagrada Familia Guided Tour",
+            highlights: ["Skip-the-line entry", "Expert guide", "Tower access"],
+            cost: { base: 60, includes: ["Guide", "Tickets"] }
+          },
+          {
+            title: "Gaudí Architecture Walk",
+            highlights: ["Sagrada Familia", "Casa Batlló", "Park Güell"],
+            cost: { base: 80, includes: ["Guide", "Tickets"] }
+          }
+        ]
+      },
+      {
+        id: 9,
+        name: "Bali Beaches",
+        country: "Indonesia",
+        city: "Bali",
+        category: "beaches",
+        image: "images/baliBeach.webp",
+        description: "Tropical paradise with pristine beaches, crystal clear waters, and vibrant coral reefs.",
+        highlights: ["Beach relaxation", "Water sports", "Island culture"],
+        hotels: [
+          {
+            name: "The Legian Bali",
+            description: "Luxury beachfront resort in Seminyak with infinity pool.",
+            map: "https://www.google.com/maps/place/The+Legian+Bali/@-8.6901,115.1551,17z/data=!3m1!4b1!4m9!3m8!1s0x2dd247e2e2e2e2e2:0x8e2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d-8.6901!4d115.1551!16s%2Fg%2F11b7w7w7w24",
+            lat: -8.6901,
+            lng: 115.1551
+          },
+          {
+            name: "Padma Resort Legian",
+            description: "Family-friendly resort with lush gardens and pools.",
+            map: "https://www.google.com/maps/place/Padma+Resort+Legian/@-8.7011,115.1672,17z/data=!3m1!4b1!4m9!3m8!1s0x2dd247e2e2e2e2e2:0x9e2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d-8.7011!4d115.1672!16s%2Fg%2F11b7w7w7w25",
+            lat: -8.7011,
+            lng: 115.1672
+          }
+        ],
+        tours: [
+          {
+            title: "Bali Beach Hopping Tour",
+            highlights: ["Seminyak", "Kuta", "Jimbaran Bay"],
+            cost: { base: 75, includes: ["Guide", "Transport"] }
+          },
+          {
+            title: "Snorkeling Adventure",
+            highlights: ["Blue Lagoon", "Padang Bai", "Equipment included"],
+            cost: { base: 90, includes: ["Guide", "Equipment"] }
+          }
+        ]
+      },
+      {
+        id: 10,
+        name: "Pyramids of Giza",
+        country: "Egypt",
+        city: "Cairo",
+        category: "landmarks",
+        image: "images/pyramids.jpg",
+        description: "Ancient wonders of the world, built as tombs for pharaohs over 4,500 years ago.",
+        highlights: ["Ancient history", "Archaeology", "Desert landscape"],
+        hotels: [
+          {
+            name: "Marriott Mena House, Cairo",
+            description: "Historic hotel with direct pyramid views and lush gardens.",
+            map: "https://www.google.com/maps/place/Marriott+Mena+House,+Cairo/@29.9934,31.1342,17z/data=!3m1!4b1!4m9!3m8!1s0x145846e2e2e2e2e2:0xae2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d29.9934!4d31.1342!16s%2Fg%2F11b7w7w7w26",
+            lat: 29.9934,
+            lng: 31.1342
+          },
+          {
+            name: "Steigenberger Pyramids Cairo",
+            description: "Modern hotel with pool and easy access to the pyramids.",
+            map: "https://www.google.com/maps/place/Steigenberger+Pyramids+Cairo/@29.9937,31.1275,17z/data=!3m1!4b1!4m9!3m8!1s0x145846e2e2e2e2e2:0xbe2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d29.9937!4d31.1275!16s%2Fg%2F11b7w7w7w27",
+            lat: 29.9937,
+            lng: 31.1275
+          }
+        ],
+        tours: [
+          {
+            title: "Giza Pyramids & Sphinx Tour",
+            highlights: ["Pyramids entry", "Sphinx", "Camel ride"],
+            cost: { base: 85, includes: ["Guide", "Tickets"] }
+          },
+          {
+            title: "Cairo Museum & Pyramids Day",
+            highlights: ["Egyptian Museum", "Pyramids", "Lunch included"],
+            cost: { base: 110, includes: ["Guide", "Tickets", "Lunch"] }
+          }
+        ]
+      },
+      {
+        id: 11,
+        name: "Sydney Opera House",
+        country: "Australia",
+        city: "Sydney",
+        category: "landmarks",
+        image: "images/sydneyOperaHouse.jpg",
+        description: "Iconic performing arts center with distinctive sail-like shells, a UNESCO World Heritage site.",
+        highlights: ["Architecture", "Performances", "Harbor views"],
+        hotels: [
+          {
+            name: "Park Hyatt Sydney",
+            description: "Luxury hotel with stunning views of the Opera House and Harbour Bridge.",
+            map: "https://www.google.com/maps/place/Park+Hyatt+Sydney/@-33.8568,151.2153,17z/data=!3m1!4b1!4m9!3m8!1s0x6b12ae2e2e2e2e2e:0xfe2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d-33.8568!4d151.2153!16s%2Fg%2F11b7w7w7w28",
+            lat: -33.8568,
+            lng: 151.2153
+          },
+          {
+            name: "Pullman Quay Grand Sydney Harbour",
+            description: "Upscale suites overlooking Circular Quay, close to the Opera House.",
+            map: "https://www.google.com/maps/place/Pullman+Quay+Grand+Sydney+Harbour/@-33.8568,151.2153,17z/data=!3m1!4b1!4m9!3m8!1s0x6b12ae2e2e2e2e2e:0xfe2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d-33.8568!4d151.2153!16s%2Fg%2F11b7w7w7w29",
+            lat: -33.8568,
+            lng: 151.2153
+          }
+        ],
+        tours: [
+          {
+            title: "Sydney Opera House Guided Tour",
+            highlights: ["Backstage access", "Architectural insights", "Performance history"],
+            cost: { base: 55, includes: ["Guide", "Tickets"] }
+          },
+          {
+            title: "Sydney Harbour Cruise",
+            highlights: ["Opera House views", "Harbour Bridge", "Lunch included"],
+            cost: { base: 80, includes: ["Cruise", "Lunch"] }
+          }
+        ]
+      },
+      {
+        id: 12,
+        name: "Iguazu Falls",
+        country: "Brazil/Argentina",
+        city: "Border",
+        category: "nature",
+        image: "images/iguazuFalls.jpg",
+        description: "One of the world's most spectacular waterfalls, with 275 individual falls spanning nearly 2 miles.",
+        highlights: ["Waterfalls", "Rainforest", "Wildlife"],
+        hotels: [
+          {
+            name: "Belmond Hotel das Cataratas",
+            description: "Luxury hotel inside the national park, steps from the falls.",
+            map: "https://www.google.com/maps/place/Belmond+Hotel+das+Cataratas/@-25.4252,-54.6115,17z/data=!3m1!4b1!4m9!3m8!1s0x94f6e3e2e2e2e2e2:0x9e2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d-25.4252!4d-54.6115!16s%2Fg%2F11b7w7w7w30",
+            lat: -25.4252,
+            lng: -54.6115
+          },
+          {
+            name: "Loi Suites Iguazú Hotel",
+            description: "Elegant resort surrounded by subtropical forest.",
+            map: "https://www.google.com/maps/place/Loi+Suites+Iguazú+Hotel/@-25.4252,-54.6115,17z/data=!3m1!4b1!4m9!3m8!1s0x94f6e3e2e2e2e2e2:0x9e2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d-25.4252!4d-54.6115!16s%2Fg%2F11b7w7w7w31",
+            lat: -25.4252,
+            lng: -54.6115
+          }
+        ],
+        tours: [
+          {
+            title: "Iguazu Falls Full-Day Tour",
+            highlights: ["Brazilian & Argentine sides", "Boat ride", "Jungle train"],
+            cost: { base: 120, includes: ["Guide", "Transport"] }
+          },
+          {
+            title: "Wildlife & Waterfalls Adventure",
+            highlights: ["Bird Park", "Jungle walk", "Falls viewpoints"],
+            cost: { base: 95, includes: ["Guide", "Tickets"] }
+          }
+        ]
+      },
+      {
+        id: 13,
+        name: "Louvre Museum",
+        country: "France",
+        city: "Paris",
+        category: "culture",
+        image: "images/louvreMuseum.webp",
+        description: "World's largest art museum, home to the Mona Lisa and thousands of priceless artworks.",
+        highlights: ["Art masterpieces", "History", "Architecture"],
+        hotels: [
+          {
+            name: "Hotel du Louvre",
+            description: "Elegant hotel in a historic building next to the Louvre.",
+            map: "https://www.google.com/maps/place/Hotel+du+Louvre/@48.8606,2.3376,17z/data=!3m1!4b1!4m9!3m8!1s0x47e66fddc2e2c6e1:0x6e2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d48.8606!4d2.3376!16s%2Fg%2F11b7w7w7w32",
+            lat: 48.8606,
+            lng: 2.3376
+          },
+          {
+            name: "Grand Hotel du Palais Royal",
+            description: "Luxury boutique hotel with views of the Louvre and Palais Royal.",
+            map: "https://www.google.com/maps/place/Grand+Hotel+du+Palais+Royal/@48.8606,2.3376,17z/data=!3m1!4b1!4m9!3m8!1s0x47e66fddc2e2c6e1:0x6e2e2e2e2e2e2e2e!5m2!4m1!1i2!8m2!3d48.8606!4d2.3376!16s%2Fg%2F11b7w7w7w33",
+            lat: 48.8606,
+            lng: 2.3376
+          }
+        ],
+        tours: [
+          {
+            title: "Louvre Museum Skip-the-Line Tour",
+            highlights: ["Mona Lisa", "Venus de Milo", "Expert guide"],
+            cost: { base: 70, includes: ["Guide", "Tickets"] }
+          },
+          {
+            title: "Paris Art & History Walk",
+            highlights: ["Louvre", "Seine riverbank", "Notre-Dame"],
+            cost: { base: 60, includes: ["Guide"] }
+          }
+        ]
+      },
+      {
+        id: 14,
+        name: "Venice Canals",
+        country: "Italy",
+        city: "Venice",
+        category: "cities",
+        image: "images/veniceCanals.jpeg",
+        description: "The floating city built on 118 small islands, connected by canals and bridges.",
+        highlights: ["Gondola rides", "Architecture", "Romance"],
+        hotels: [
+          {
+            name: "Hotel Danieli, a Luxury Collection Hotel",
+            description: "Iconic Venetian hotel with opulent decor and Grand Canal views.",
+            map: "https://www.google.com/maps/place/Hotel+Danieli,+a+Luxury+Collection+Hotel/@45.4344,12.338,17z/data=!3m1!4b1!4m9!3m8!1s0x477e6e1f0ba2e2e2:0x40b82c3688c9460!5m2!4m1!1i2!8m2!3d45.4344!4d12.338!16s%2Fg%2F11b7w7w7w34",
+            lat: 45.4344,
+            lng: 12.338
+          },
+          {
+            name: "Ca' Sagredo Hotel",
+            description: "Historic palace hotel on the Grand Canal.",
+            map: "https://www.google.com/maps/place/Ca'+Sagredo+Hotel/@45.4344,12.338,17z/data=!3m1!4b1!4m9!3m8!1s0x477e6e1f0ba2e2e2:0x40b82c3688c9460!5m2!4m1!1i2!8m2!3d45.4344!4d12.338!16s%2Fg%2F11b7w7w7w35",
+            lat: 45.4344,
+            lng: 12.338
+          }
+        ],
+        tours: [
+          {
+            title: "Venice Grand Canal Tour",
+            highlights: ["Gondola ride", "St. Mark's Square", "Rialto Bridge"],
+            cost: { base: 95, includes: ["Guide", "Gondola"] }
+          },
+          {
+            title: "Venetian Islands Excursion",
+            highlights: ["Murano glass", "Burano lace", "Torcello"],
+            cost: { base: 80, includes: ["Guide", "Boat"] }
+          }
+        ]
+      },
+      {
+        id: 15,
+        name: "Christ the Redeemer",
+        country: "Brazil",
+        city: "Rio de Janeiro",
+        category: "landmarks",
+        image: "images/christRedeemer.jpg",
+        description: "Iconic statue of Jesus Christ overlooking Rio de Janeiro from the peak of Corcovado Mountain.",
+        highlights: ["City views", "Religious significance", "Sunset"],
+        hotels: [
+          {
+            name: "Hotel Fasano Rio de Janeiro",
+            description: "Luxury beachfront hotel in Ipanema with rooftop pool and Christ views.",
+            map: "https://www.google.com/maps/place/Hotel+Fasano+Rio+de+Janeiro/@-22.9519,-43.1765,17z/data=!3m1!4b1!4m9!3m8!1s0x997e5c5d53955555:0x11d6b35555555555!5m2!4m1!1i2!8m2!3d-22.9519!4d-43.1765!16s%2Fg%2F11b7w7w7w36",
+            lat: -22.9519,
+            lng: -43.1765
+          },
+          {
+            name: "Belmond Copacabana Palace",
+            description: "Historic 5-star hotel on Copacabana Beach, easy access to Corcovado.",
+            map: "https://www.google.com/maps/place/Belmond+Copacabana+Palace/@-22.9697,-43.1972,17z/data=!3m1!4b1!4m9!3m8!1s0x997e5c5d53955555:0x11d6b35555555555!5m2!4m1!1i2!8m2!3d-22.9697!4d-43.1972!16s%2Fg%2F11b7w7w7w37",
+            lat: -22.9697,
+            lng: -43.1972
+          }
+        ],
+        tours: [
+          {
+            title: "Corcovado & Christ the Redeemer Tour",
+            highlights: ["Train ride up Corcovado", "Statue visit", "City views"],
+            cost: { base: 75, includes: ["Guide", "Tickets"] }
+          },
+          {
+            title: "Rio City Highlights",
+            highlights: ["Sugarloaf Mountain", "Selarón Steps", "Sambadrome"],
+            cost: { base: 90, includes: ["Guide", "Transport"] }
+          }
+        ]
+      }
+      // ... more destinations can be added here ...
+    ];
+    let currentFilter = 'all';
+    let filteredServices = [...servicesDestinations];
+
+    function filterServices() {
+      filteredServices = servicesDestinations.filter(dest => {
+        const categoryMatch = currentFilter === 'all' || dest.category === currentFilter;
+        const placeLabel = `${dest.name} (${dest.city}, ${dest.country})`;
+        const placeMatch = !currentPlaceLabel || placeLabel === currentPlaceLabel;
+        return categoryMatch && placeMatch;
+      });
+      renderServices();
+    }
+
+    function renderServices() {
+      const grid = document.getElementById('servicesGrid');
+      grid.innerHTML = '';
+      filteredServices.forEach((dest, index) => {
+        const card = document.createElement('div');
+        card.className = 'glass-effect rounded-2xl p-8 group relative overflow-hidden shadow-lg';
+        card.innerHTML = `
+          <div class="mb-6 relative">
+            <img src="${dest.image}" alt="${dest.name}" class="w-full h-48 object-cover rounded-xl mb-4 card-img-zoom">
+            <div class="card-info-bar">
+              <i class="fas fa-map-marker-alt"></i>
+              <span class="font-bold text-yellow-200">${dest.name}</span>
+              <span class="text-xs text-gray-200 ml-2">${dest.city}, ${dest.country}</span>
+              <span class="flex flex-wrap gap-1 ml-4">
+                ${dest.highlights.map(h => `<span class='bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs'>${h}</span>`).join('')}
+              </span>
+            </div>
+          </div>
+          <h3 class="text-2xl font-bold text-yellow-200 mb-2">${dest.name}</h3>
+          <p class="text-gray-300 mb-2">${dest.city}, ${dest.country}</p>
+          <p class="text-gray-400 mb-4">${dest.description}</p>
+          <div class="mb-6">
+            <h4 class="text-lg font-semibold text-blue-400 mb-2">Nearby Hotels & Resorts</h4>
+            <ul class="space-y-2">
+              ${dest.hotels.map((hotel, hidx) => `
+                <li class="bg-gray-800 rounded-lg p-3 flex flex-col md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <span class="font-bold text-yellow-200">${hotel.name}</span>
+                    <span class="block text-gray-300 text-sm">${hotel.description}</span>
+                  </div>
+                  <div class="flex items-center gap-2 mt-2 md:mt-0">
+                    <a href="${hotel.map}" target="_blank" rel="noopener" class="text-blue-400 hover:underline mt-2 md:mt-0">View on Map</a>
+                  </div>
+                </li>
+              `).join('')}
+            </ul>
+          </div>
+          <div class="mb-6">
+            <h4 class="text-lg font-semibold text-green-400 mb-2">Tour Packages</h4>
+            <ul class="space-y-2">
+              ${dest.tours.map(tour => `
+                <li class="bg-gray-800 rounded-lg p-3">
+                  <div class="font-bold text-yellow-200">${tour.title}</div>
+                  <div class="text-gray-300 text-sm mb-1">${tour.highlights.join(', ')}</div>
+                  <div class="text-sm text-gray-400">Cost: <span class="text-green-400 font-bold">$${tour.cost.base}</span> &mdash; Includes: ${tour.cost.includes.join(', ')}</div>
+                </li>
+              `).join('')}
+            </ul>
+          </div>
+          <div class="text-center">
+            <a href="contact.html" class="inline-block bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-full text-lg font-semibold text-white transition-all duration-300">Contact Us</a>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => {
+          b.classList.remove('active', 'bg-white/20', 'text-white');
+          b.classList.add('bg-white/10', 'text-white/80');
+        });
+        btn.classList.add('active', 'bg-white/20', 'text-white');
+        btn.classList.remove('bg-white/10', 'text-white/80');
+        currentFilter = btn.dataset.filter;
+        filterServices();
+      });
+    });
+
+    // Initial render (will be filled with real data)
+    renderServices();
+
+    // Add function to focus on hotel
+    function focusHotelOnMap(hotel, dest) {
+      if (!map) return;
+      hotelMarker.setPosition({ lat: hotel.lat, lng: hotel.lng });
+      hotelMarker.setVisible(true);
+      map.setZoom(15);
+      map.setCenter({ lat: hotel.lat, lng: hotel.lng });
+      hotelInfoWindow.setContent(`<b>${hotel.name}</b><br>${hotel.description}<br><span class='text-xs text-gray-400'>${dest.name}, ${dest.city}</span>`);
+      hotelInfoWindow.open(map, hotelMarker);
+    }
+
+    function getAllCountries() {
+      const set = new Set();
+      servicesDestinations.forEach(dest => {
+        if (dest.country) {
+          dest.country.split('/').forEach(c => set.add(c.trim()));
+        }
+      });
+      return Array.from(set).sort();
+    }
+    const allFoodCountries = getAllCountries();
+
+    // Remove Argentina from allFoodCountries if present
+    const argentinaIndex = allFoodCountries.indexOf('Argentina');
+    if (argentinaIndex !== -1) allFoodCountries.splice(argentinaIndex, 1);
+
+    // After extracting allFoodCountries, add Bangladesh if not present
+    if (!allFoodCountries.includes('Bangladesh')) allFoodCountries.push('Bangladesh');
+    allFoodCountries.sort();
+
+    const foodCountryInput = document.getElementById('foodCountryInput');
+    const foodCountryDropdown = document.getElementById('foodCountryDropdown');
+    let dropdownActiveIndex = -1;
+
+    function showCountryDropdown(matches) {
+      if (!matches.length) {
+        foodCountryDropdown.classList.add('hidden');
+        return;
+      }
+      foodCountryDropdown.innerHTML = matches.map((c, i) => `
+        <div class="px-5 py-2 cursor-pointer hover:bg-blue-100 hover:text-blue-700 rounded-xl transition-colors ${i === dropdownActiveIndex ? 'bg-blue-200 text-blue-900' : ''}" data-country="${c}">${c}</div>
+      `).join('');
+      foodCountryDropdown.classList.remove('hidden');
+    }
+
+    function hideCountryDropdown() {
+      foodCountryDropdown.classList.add('hidden');
+      dropdownActiveIndex = -1;
+    }
+
+    foodCountryInput.addEventListener('input', function() {
+      const val = this.value.trim().toLowerCase();
+      if (!val) {
+        hideCountryDropdown();
+        currentFoodCountry = '';
+        renderFoodGrid();
+        return;
+      }
+      const matches = allFoodCountries.filter(c => c.toLowerCase().includes(val));
+      showCountryDropdown(matches);
+      currentFoodCountry = this.value.trim();
+      renderFoodGrid();
+    });
+
+    foodCountryInput.addEventListener('focus', function() {
+      const val = this.value.trim().toLowerCase();
+      const matches = val ? allFoodCountries.filter(c => c.toLowerCase().includes(val)) : allFoodCountries;
+      showCountryDropdown(matches);
+    });
+
+    foodCountryInput.addEventListener('blur', function() {
+      setTimeout(hideCountryDropdown, 120); // allow click
+    });
+
+    foodCountryDropdown.addEventListener('mousedown', function(e) {
+      if (e.target && e.target.dataset.country) {
+        foodCountryInput.value = e.target.dataset.country;
+        currentFoodCountry = e.target.dataset.country;
+        renderFoodGrid();
+        hideCountryDropdown();
+      }
+    });
+
+    foodCountryInput.addEventListener('keydown', function(e) {
+      const visibleItems = Array.from(foodCountryDropdown.children);
+      if (foodCountryDropdown.classList.contains('hidden') || !visibleItems.length) return;
+      if (e.key === 'ArrowDown') {
+        dropdownActiveIndex = (dropdownActiveIndex + 1) % visibleItems.length;
+        showCountryDropdown(visibleItems.map(div => div.textContent));
+        e.preventDefault();
+      } else if (e.key === 'ArrowUp') {
+        dropdownActiveIndex = (dropdownActiveIndex - 1 + visibleItems.length) % visibleItems.length;
+        showCountryDropdown(visibleItems.map(div => div.textContent));
+        e.preventDefault();
+      } else if (e.key === 'Enter') {
+        if (dropdownActiveIndex >= 0 && dropdownActiveIndex < visibleItems.length) {
+          const selected = visibleItems[dropdownActiveIndex];
+          foodCountryInput.value = selected.textContent;
+          currentFoodCountry = selected.textContent;
+          renderFoodGrid();
+          hideCountryDropdown();
+          e.preventDefault();
+        }
+      }
+    });
+
+    document.getElementById('clearFoodCountry').addEventListener('click', function() {
+      foodCountryInput.value = '';
+      currentFoodCountry = '';
+      renderFoodGrid();
+      hideCountryDropdown();
+    });
+
+    const foodExperiences = [
+      // Italy
+      { country: 'Italy', image: 'images/Neapolitanpizza.jpg', title: 'Neapolitan Pizza', desc: 'The pride of Naples, this wood-fired pizza features a soft, chewy crust, San Marzano tomatoes, fresh mozzarella, and basil. A UNESCO-recognized culinary art.' },
+      { country: 'Italy', image: 'images/Spaghetticarbonara.jpg', title: 'Spaghetti Carbonara', desc: 'A Roman classic: pasta tossed with eggs, Pecorino Romano, guanciale, and black pepper. Creamy, rich, and deeply comforting.' },
+      { country: 'Italy', image: 'images/risottoAllaMilanese.jpg', title: 'Risotto alla Milanese', desc: 'Golden-hued risotto flavored with saffron, butter, and Parmesan. A creamy specialty from Milan.' },
+      // Japan
+      { country: 'Japan', image: 'images/sushi.webp', title: 'Sushi', desc: 'An iconic Japanese dish of vinegared rice with fresh fish or vegetables, often served with wasabi and pickled ginger. A symbol of Japanese precision and artistry.' },
+      { country: 'Japan', image: 'images/ramen.jpg', title: 'Ramen', desc: 'Hearty noodle soup with a rich, savory broth, topped with sliced pork, egg, and green onions. Each region of Japan boasts its own unique style.' },
+      { country: 'Japan', image: 'images/okonomiyaki.jpg', title: 'Okonomiyaki', desc: 'A savory pancake filled with cabbage, pork, and topped with tangy sauce and bonito flakes. A street food favorite from Osaka.' },
+      // Thailand
+      { country: 'Thailand', image: 'images/padthai.webp', title: 'Pad Thai', desc: 'Thailand\'s beloved street food: stir-fried rice noodles with shrimp, tofu, peanuts, and a tangy-sweet tamarind sauce. A perfect balance of flavors.' },
+      { country: 'Thailand', image: 'images/greenCurry.jpg', title: 'Green Curry', desc: 'A fragrant, spicy coconut milk curry with chicken, eggplant, and Thai basil. Served with jasmine rice, it\'s a staple of Thai home cooking.' },
+      { country: 'Thailand', image: 'images/tomYumGoong.jpg', title: 'Tom Yum Goong', desc: 'A hot and sour soup with shrimp, lemongrass, kaffir lime leaves, and chili. A taste of Thailand\'s vibrant flavors.' },
+      // France
+      { country: 'France', image: 'images/coqauVin.jpg', title: 'Coq au Vin', desc: 'A rustic French stew of chicken braised in red wine with mushrooms, onions, and bacon. A dish that tells the story of French countryside tradition.' },
+      { country: 'France', image: 'images/crepes.jpg', title: 'Crêpes', desc: 'Thin, delicate pancakes filled with sweet or savory ingredients. Enjoyed everywhere from Parisian cafés to village markets.' },
+      { country: 'France', image: 'images/bouillabaisse.jpg', title: 'Bouillabaisse', desc: 'A Provençal fish stew with saffron, garlic, and a variety of seafood. Served with rouille and crusty bread.' },
+      // India
+      { country: 'India', image: 'images/biryani.jpg', title: 'Biryani', desc: 'A festive rice dish layered with fragrant spices, saffron, and marinated meat or vegetables. A celebration on every plate.' },
+      { country: 'India', image: 'images/masalaDosa.webp', title: 'Masala Dosa', desc: 'A crispy, golden South Indian crepe filled with spiced potatoes, served with coconut chutney and sambar. A breakfast favorite across India.' },
+      { country: 'India', image: 'images/roganJosh.jpg', title: 'Rogan Josh', desc: 'A Kashmiri specialty: tender lamb cooked in a rich, aromatic gravy of yogurt and spices.' },
+      // Australia
+      { country: 'Australia', image: 'images/barramundi.webp', title: 'Barramundi', desc: 'A native Australian fish, grilled or pan-fried and served with lemon myrtle and fresh greens. A taste of the Outback and the coast.' },
+      { country: 'Australia', image: 'images/lamingtons.jpeg', title: 'Lamingtons', desc: 'Soft sponge cake squares dipped in chocolate and rolled in coconut. A beloved treat at every Aussie gathering.' },
+      { country: 'Australia', image: 'images/meatPie.jpg', title: 'Meat Pie', desc: 'A flaky pastry filled with minced meat and gravy, topped with tomato sauce. An Australian comfort food staple.' },
+      // Spain
+      { country: 'Spain', image: 'images/paella.jpg', title: 'Paella', desc: 'A vibrant Valencian rice dish cooked with saffron, seafood, chicken, and vegetables. A symbol of Spanish celebration and togetherness.' },
+      { country: 'Spain', image: 'images/churrosChoco.avif', title: 'Churros con Chocolate', desc: 'Crispy fried dough sticks dusted with sugar, served with thick hot chocolate for dipping. A favorite at Spanish fairs and cafés.' },
+      { country: 'Spain', image: 'images/tortilla.jpg', title: 'Tortilla Española', desc: 'A classic Spanish omelette made with potatoes and onions, cooked in olive oil. Served as a tapa or light meal.' },
+      // Indonesia
+      { country: 'Indonesia', image: 'images/nasi.jpg', title: 'Nasi Goreng', desc: 'Indonesia\'s national fried rice, cooked with sweet soy sauce, garlic, shallots, and topped with a fried egg. Comfort food at its best.' },
+      { country: 'Indonesia', image: 'images/satay.jpg', title: 'Satay', desc: 'Grilled skewers of marinated meat, served with spicy peanut sauce. A staple of Indonesian street food culture.' },
+      { country: 'Indonesia', image: 'images/gado.jpg', title: 'Gado-Gado', desc: 'A vibrant salad of blanched vegetables, tofu, and eggs, topped with creamy peanut sauce.' },
+      // Egypt
+      { country: 'Egypt', image: 'images/koshari.jpg', title: 'Koshari', desc: 'A hearty mix of rice, lentils, pasta, and chickpeas, topped with spicy tomato sauce and crispy onions. Egypt\'s ultimate comfort food.' },
+      { country: 'Egypt', image: 'images/fulMedames.webp', title: 'Ful Medames', desc: 'Slow-cooked fava beans seasoned with olive oil, garlic, and lemon. A breakfast staple dating back to ancient times.' },
+      { country: 'Egypt', image: 'images/molokhia.jpg', title: 'Molokhia', desc: 'A green soup made from jute leaves, cooked with garlic and coriander, often served with chicken or rabbit.' },
+      // Brazil
+      { country: 'Brazil', image: 'images/feijoada.jpg', title: 'Feijoada', desc: 'A rich black bean stew with pork, beef, and sausages, served with rice, orange slices, and farofa. The soul of Brazilian cuisine.' },
+      { country: 'Brazil', image: 'images/paoQueijo.jpg', title: 'Pão de Queijo', desc: 'Chewy cheese bread rolls made with cassava flour. A favorite snack from Minas Gerais, enjoyed across Brazil.' },
+      { country: 'Brazil', image: 'images/moqueca.jpg', title: 'Moqueca', desc: 'A fragrant seafood stew with coconut milk, tomatoes, and dendê oil, hailing from Bahia.' },
+      // USA
+      { country: 'USA', image: 'images/cheesecake.jpg', title: 'New York Cheesecake', desc: 'Creamy, dense cheesecake with a graham cracker crust, often topped with strawberries. An American classic.' },
+      { country: 'USA', image: 'images/buffaloWings.jpeg', title: 'Buffalo Wings', desc: 'Crispy chicken wings tossed in spicy sauce, served with celery and blue cheese dip. A staple of American sports culture.' },
+      { country: 'USA', image: 'images/clamChowder.jpg', title: 'Clam Chowder', desc: 'A creamy soup of clams, potatoes, and onions, especially beloved in New England.' },
+      // Bangladesh
+      { country: 'Bangladesh', image: 'images/bhunaKhichuri.jpg', title: 'Bhuna Khichuri', desc: 'A fragrant rice and lentil dish, slow-cooked with aromatic spices and served with beef or chicken curry, bhorta, and salad. A monsoon favorite.' },
+      { country: 'Bangladesh', image: 'images/pantaIlish.webp', title: 'Panta Ilish', desc: 'Fermented rice soaked in water, served with fried hilsa fish, green chilies, and onions. A traditional Bengali New Year delicacy.' },
+      { country: 'Bangladesh', image: 'images/morogPolao.jpg', title: 'Morog Polao', desc: 'A festive chicken and rice pilaf, cooked with aromatic spices, yogurt, and ghee. Served at weddings and celebrations.' },
+      { country: 'Bangladesh', image: 'images/shorsheIlish.webp', title: 'Shorshe Ilish', desc: 'Hilsa fish cooked in a pungent mustard sauce, a beloved delicacy from the rivers of Bangladesh.' },
+      { country: 'Bangladesh', image: 'images/chingriBhorta.avif', title: 'Chingri Bhorta', desc: 'Mashed shrimp mixed with mustard oil, green chilies, and onions. A spicy, flavorful side enjoyed with rice.' },
+    ];
+    let currentFoodCountry = '';
+    function renderFoodGrid() {
+      const grid = document.getElementById('foodGrid');
+      grid.innerHTML = '';
+      foodExperiences.filter(f => !currentFoodCountry || f.country.toLowerCase() === currentFoodCountry.toLowerCase())
+        .forEach(f => {
+          const card = document.createElement('div');
+          card.className = 'glass-effect rounded-2xl overflow-visible food-card-hover group shadow-lg border border-blue-900/20';
+          card.innerHTML = `
+            <img src="${f.image}" alt="${f.title}" class="w-full h-48 object-cover food-img">
+            <div class="p-6 flex flex-col gap-2">
+              <h3 class="text-2xl font-extrabold text-yellow-200 mb-1 flex items-center gap-2 food-title-underline">
+                <i class='fas fa-utensils text-blue-400'></i> ${f.title}
+              </h3>
+              <div class="text-blue-300 text-sm font-semibold mb-1">${f.country}</div>
+              <p class="text-gray-200 text-base leading-relaxed mb-2">${f.desc}</p>
+              <div class="flex items-center gap-2 mt-2">
+                <span class="inline-block bg-gradient-to-r from-blue-400 to-yellow-200 text-xs text-black px-3 py-1 rounded-full font-bold tracking-wide shadow">Local Favorite</span>
+              </div>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+    }
+    renderFoodGrid();
+
+    // --- Place Name Dropdown Filter Logic ---
+    const allPlaceOptions = servicesDestinations.map(dest => ({
+      label: `${dest.name} (${dest.city}, ${dest.country})`,
+      name: dest.name,
+      city: dest.city,
+      country: dest.country
+    }));
+    allPlaceOptions.sort((a, b) => a.label.localeCompare(b.label));
+    const allPlaceLabels = allPlaceOptions.map(opt => opt.label);
+    const placeNameInput = document.getElementById('placeNameInput');
+    const placeNameDropdown = document.getElementById('placeNameDropdown');
+    let placeDropdownActiveIndex = -1;
+    let currentPlaceLabel = '';
+
+    function showPlaceDropdown(matches) {
+      if (!matches.length) {
+        placeNameDropdown.classList.add('hidden');
+        return;
+      }
+      placeNameDropdown.innerHTML = matches.map((label, i) => `
+        <div class="px-5 py-2 cursor-pointer hover:bg-blue-100 hover:text-blue-700 rounded-xl transition-colors ${i === placeDropdownActiveIndex ? 'bg-blue-200 text-blue-900' : ''}" data-place-label="${label}">${label}</div>
+      `).join('');
+      placeNameDropdown.classList.remove('hidden');
+    }
+
+    function hidePlaceDropdown() {
+      placeNameDropdown.classList.add('hidden');
+      placeDropdownActiveIndex = -1;
+    }
+
+    placeNameInput.addEventListener('input', function() {
+      const val = this.value.trim().toLowerCase();
+      if (!val) {
+        hidePlaceDropdown();
+        currentPlaceLabel = '';
+        filterServices();
+        return;
+      }
+      const matches = allPlaceLabels.filter(label => label.toLowerCase().includes(val));
+      showPlaceDropdown(matches);
+      currentPlaceLabel = this.value.trim();
+      filterServices();
+    });
+
+    placeNameInput.addEventListener('focus', function() {
+      const val = this.value.trim().toLowerCase();
+      const matches = val ? allPlaceLabels.filter(label => label.toLowerCase().includes(val)) : allPlaceLabels;
+      showPlaceDropdown(matches);
+    });
+
+    placeNameInput.addEventListener('blur', function() {
+      setTimeout(hidePlaceDropdown, 120); // allow click
+    });
+
+    placeNameDropdown.addEventListener('mousedown', function(e) {
+      if (e.target && e.target.dataset.placeLabel) {
+        placeNameInput.value = e.target.dataset.placeLabel;
+        currentPlaceLabel = e.target.dataset.placeLabel;
+        filterServices();
+        hidePlaceDropdown();
+      }
+    });
+
+    placeNameInput.addEventListener('keydown', function(e) {
+      const visibleItems = Array.from(placeNameDropdown.children);
+      if (placeNameDropdown.classList.contains('hidden') || !visibleItems.length) return;
+      if (e.key === 'ArrowDown') {
+        placeDropdownActiveIndex = (placeDropdownActiveIndex + 1) % visibleItems.length;
+        showPlaceDropdown(visibleItems.map(div => div.textContent));
+        e.preventDefault();
+      } else if (e.key === 'ArrowUp') {
+        placeDropdownActiveIndex = (placeDropdownActiveIndex - 1 + visibleItems.length) % visibleItems.length;
+        showPlaceDropdown(visibleItems.map(div => div.textContent));
+        e.preventDefault();
+      } else if (e.key === 'Enter') {
+        if (placeDropdownActiveIndex >= 0 && placeDropdownActiveIndex < visibleItems.length) {
+          const selected = visibleItems[placeDropdownActiveIndex];
+          placeNameInput.value = selected.textContent;
+          currentPlaceLabel = selected.textContent;
+          filterServices();
+          hidePlaceDropdown();
+          e.preventDefault();
+        }
+      }
+    });
+
+    document.getElementById('clearPlaceName').addEventListener('click', function() {
+      placeNameInput.value = '';
+      currentPlaceLabel = '';
+      filterServices();
+      hidePlaceDropdown();
+    });
+  </script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap"></script>
+</body>
+</html>
